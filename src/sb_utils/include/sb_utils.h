@@ -12,6 +12,10 @@
 #define UTILS_UTILS_H
 
 #include <ros/ros.h>
+#include <geometry_msgs/Quaternion.h>
+#include <geometry_msgs/Vector3.h>
+#include <tf/LinearMath/Quaternion.h>
+#include <tf/transform_datatypes.h>
 
 /**
  * Get a param with a default value
@@ -66,4 +70,19 @@ bool SB_getParam(ros::NodeHandle& nh, const std::string& param_name, T& param_va
     return true;
 }
 
+namespace sb_vector_utils {
+    /**
+     * Converts the given vector from one orientation to another
+     *
+     * @param vec the vector to be translated
+     * @param from_orientation the current orientation of the vector
+     * @param to_orientation the orientation to translate the vector to
+     *
+     * @return the translated vector
+     */
+    void changeVectorOrientation(geometry_msgs::Vector3& vec,
+                                 geometry_msgs::Quaternion& from_orientation,
+                                 geometry_msgs::Quaternion& to_orientation);
+
+}
 #endif //UTILS_UTILS_H
