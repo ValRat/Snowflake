@@ -8,6 +8,7 @@
 #define SAMPLE_PACKAGE_MYNODE_H
 
 #include <iostream>
+#include <sb_utils.h>
 #include <sensor_msgs/Imu.h>
 #include <geometry_msgs/Point.h>
 #include <ros/ros.h>
@@ -26,10 +27,10 @@ public:
      *
      * @return our updated velocity
      */
-    geometry_msgs::Vector3 calcNewVelocity(geometry_msgs::Vector3 prev_velocity,
-                                           geometry_msgs::Vector3 prev_acceleration,
-                                           geometry_msgs::Vector3 curr_acceleration,
-                                           double delta_time);
+    static geometry_msgs::Vector3 calcNewVelocity(geometry_msgs::Vector3 prev_velocity,
+                                                  geometry_msgs::Vector3 prev_acceleration,
+                                                  geometry_msgs::Vector3 curr_acceleration,
+                                                  double delta_time);
     /**
      * Calculates an updated velocity in 1 dimension
      *
@@ -39,23 +40,24 @@ public:
      *
      * @return our updated velocity in the dimension of interest
      */
-    double calcNewVelocity1D(double prev_velocity,
-                             double prev_acceleration,
-                             double curr_acceleration, double delta_time);
+    static double calcNewVelocity1D(double prev_velocity,
+                                    double prev_acceleration,
+                                    double curr_acceleration,
+                                    double delta_time);
     /**
      * Calculates our new position
      *
-     * @param prev_position our previously estimated position
+     * @param curr_position our previously estimated position
      * @param prev_velocity our previous velocity
      * @param curr_velocity our current velocity
      * @param delta_time the time since we received our last IMU message
      *
      * @return an estimate of our new position
      */
-    geometry_msgs::Point calcNewPosition(geometry_msgs::Point prev_position,
-                                         geometry_msgs::Vector3 prev_velocity,
-                                         geometry_msgs::Vector3 curr_velocity,
-                                         double delta_time);
+    static geometry_msgs::Point calcNewPosition(geometry_msgs::Point prev_position,
+                                                geometry_msgs::Vector3 prev_velocity,
+                                                geometry_msgs::Vector3 curr_velocity,
+                                                double delta_time);
     /**
      * Calculates the change in position in a single dimension
      *
@@ -88,8 +90,9 @@ private:
      */
     void publishCurrentPosition();
 
-    tf::Quaternion initial_orientation; // Our initial orientation
-    geometry_msgs::Point prev_position; // Our estimated position
+    bool received_initial_reading; // Whether or not we've received our initial reading
+    geometry_msgs::Quaternion initial_orientation; // Our initial orientation
+    geometry_msgs::Point curr_position; // Our estimated position
     double prev_imu_msg_time; // The last time we received an IMU message
     geometry_msgs::Vector3 prev_velocity; // The velocity from the previously received IMU message
     geometry_msgs::Vector3 prev_acceleration; // The acceleration from the previously received IMU message
