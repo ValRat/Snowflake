@@ -62,7 +62,7 @@ geometry_msgs::Vector3 IMULocalisationNode::calcNewVelocity(geometry_msgs::Vecto
     geometry_msgs::Vector3 new_velocity;
     new_velocity.x = calcNewVelocity1D(prev_velocity.x, prev_acceleration.x, curr_acceleration.x, delta_time);
     new_velocity.y = calcNewVelocity1D(prev_velocity.y, prev_acceleration.y, curr_acceleration.y, delta_time);
-    // We don't NEED the z component... but cuz I can...
+    // We don't NEED the z component... but 'cuz I can...
     new_velocity.z = calcNewVelocity1D(prev_velocity.z, prev_acceleration.z, curr_acceleration.z, delta_time);
     return new_velocity;
 }

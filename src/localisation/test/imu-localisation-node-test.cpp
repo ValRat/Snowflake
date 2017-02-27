@@ -1,7 +1,7 @@
 /*
  * Created By: Gareth Ellis
- * Created On: July 16th, 2016
- * Description: Tests for MyNode
+ * Created On: February 25, 2017
+ * Description: Tests for IMULocalisationNode
  */
 
 #include <IMULocalisationNode.h>

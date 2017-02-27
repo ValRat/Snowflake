@@ -17,11 +17,12 @@ void sb_vector_utils::changeVectorOrientation(geometry_msgs::Vector3& vec,
     tf::Quaternion tf_from_orientation, tf_to_orientation;
     tf::quaternionMsgToTF(from_orientation, tf_from_orientation);
     tf::quaternionMsgToTF(to_orientation, tf_to_orientation);
+    
     // Convert the vector to tf::Vector3
     tf::Vector3 tf_vec;
     tf::vector3MsgToTF(vec, tf_vec);
 
-    // Calculate the difference between the two orientation
+    // Calculate the difference between the two orientations
     tf::Quaternion tf_orientation_diff = tf_to_orientation.inverse() * tf_from_orientation;
 
     // Translate the vector by the difference between the two orientation
