@@ -78,8 +78,8 @@ void send_gps_over_serial() {
   // Send the identifier (must be 5 characters)
   Serial.print("GPS\0\0");
   // Send the longitude, latitude, and gps_fix
-  Serial.print(","); Serial.print(GPS.latitudeDegrees, 9);
-  Serial.print(","); Serial.print(GPS.longitudeDegrees, 9);
+  Serial.print(","); Serial.print(GPS.latitudeDegrees, 13);
+  Serial.print(","); Serial.print(GPS.longitudeDegrees, 13);
   Serial.print(","); Serial.print((int)GPS.fix);
   Serial.println();
   Serial.flush();
