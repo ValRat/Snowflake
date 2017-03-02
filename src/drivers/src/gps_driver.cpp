@@ -92,6 +92,8 @@ int main(int argc, char **argv){
                 gps_has_fix){
             // Create a point message and publish it
             sensor_msgs::NavSatFix curr_lat_and_lon;
+            // 0 here means a successful fix, see: http://docs.ros.org/api/sensor_msgs/html/msg/NavSatStatus.html
+            curr_lat_and_lon.status.status = 0;
             curr_lat_and_lon.latitude = lat;
             curr_lat_and_lon.longitude = lon;
             gps_lat_lon_pub.publish(curr_lat_and_lon);

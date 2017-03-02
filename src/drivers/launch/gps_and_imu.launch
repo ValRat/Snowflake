@@ -1,0 +1,11 @@
+<launch>
+
+    <!-- Launch GPS Driver -->
+    <node name="gps_driver" pkg="drivers" type="gps_driver" output="screen">
+        <rosparam param="port">/dev/ttyACM0</rosparam>
+    </node>
+
+    <!-- Launch the IMU -->
+    <include file="$(find razor_imu_9dof)/launch/razor-pub-and-display.launch"/>
+
+</launch>
