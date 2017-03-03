@@ -1,0 +1,21 @@
+<launch>
+
+    <!--
+        This file is reponsible for launching all of the decision nodes
+    -->
+
+    <!-- Launch vision_decision -->
+    <node name="vision_decision" pkg="decision" type="vision_decision" output="screen">
+    </node>
+
+    <!-- Launch lidar_decision -->
+    <node name="lidar_decision" pkg="decision" type="lidar_decision" output="screen">
+        <param name="max_obstacle_danger_distance" value="1.5" />
+        <param name="obstacle_danger_angle" value="$(eval 3.14159/4)"/>
+    </node>
+
+    <!-- Launch final_decision -->
+    <node name="final_decision" pkg="decision" type="final_decision" output="screen">
+    </node>
+
+</launch>
