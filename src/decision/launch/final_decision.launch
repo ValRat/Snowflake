@@ -1,0 +1,12 @@
+<launch>
+
+    <!-- Start everything final_decision needs -->
+    <include file="$(find decision)/launch/gps_stack.launch"/>
+    <include file="$(find vision)/launch/vision_stack.launch"/>
+
+    <!-- Start final_decision -->
+    <node name="final_decision" pkg="decision" type="final_decision" output="screen">
+        <remap from="/final_decision/twist" to="/robot/cmd_vel"/>
+    </node>
+        
+</launch>

@@ -1,0 +1,9 @@
+<launch>
+
+    <!-- GPS Manager -->
+    <include file="$(find decision)/launch/gps_manager.launch"/>
+
+    <!-- GPS Decision -->
+    <include file="$(find decision)/launch/gps_decision.launch"/>
+
+</launch>
