@@ -168,6 +168,7 @@ RosVision::RosVision(int argc, char **argv, std::string node_name) {
     SB_getParam(nh_private, "update_frequency", frequency, 5.0);
     SB_getParam(nh_private, "config_file", mfilter_file, ros::package::getPath("vision") + "/launch/filter_init.txt");
     SB_getParam(nh_private, "show_image_window", showWindow, true);
+    ROS_INFO("Setting Show_image_window top: %d ", (int)showWindow);
     SB_getParam(nh_private, "show_calibration_window", isCalibratingManually, false);
 
     //Initializes publishers and subscribers

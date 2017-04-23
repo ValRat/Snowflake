@@ -4,10 +4,18 @@
 
     <!-- By default, we want vision to directly control the robot -->
     <arg name="twist_topic" default="/robot/cmd_vel" />
+    <!-- By default, we want to show the images window -->
+    <arg name="show_image_window" default="false" />
 
-    <node name="ros_vision" pkg="vision" type="ros_vision" output="screen"/>
+    <node name="ros_vision" pkg="vision" type="ros_vision" output="screen">
+        <!-- Whether or not we want to show the window with the raw input,
+            birds-eye view, and HSV filtered birds-eye view -->
+        <param name="show_image_window" value="$(arg show_image_window)"/>
+    </node>
 
     <node name="vision_decision" pkg="decision" type="vision_decision" output="screen">
+        <!-- TODO: This should be the default value (so we don't need this remap)-->
+        <remap from="/vision_processing/filtered_image" to="/vision/filtered_image" />
         <remap from="/vision_decision/command" to="$(arg twist_topic)"/>
         <!-- The value to scale the angular velocity on outputted twist messages by -->
         <rosparam param="angular_vel_multiplier">2.0</rosparam>

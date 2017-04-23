@@ -8,6 +8,8 @@
     <include file="$(find vision)/launch/vision_stack.launch">
         <!-- We want to override where to send twist messages to -->
         <arg name="twist_topic" value="/vision_decision/twist" />
+        <!-- We don't want to show the window with all the images -->
+        <arg name="show_image_window" value="false" />
     </include>
 
     <!-- Start final_decision -->

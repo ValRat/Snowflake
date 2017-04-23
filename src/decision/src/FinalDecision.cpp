@@ -16,9 +16,9 @@ FinalDecision::FinalDecision(int argc, char **argv, std::string node_name) {
     ros::NodeHandle public_nh("~");
 
     // Setup Subscriber(s)
-    std::string lidar_decision_topic_name = "/lidar_decision/command";
-    std::string vision_decision_topic_name = "/vision_decision/command";
-    std::string gps_decision_topic_name = "/gps_decision/command";
+    std::string lidar_decision_topic_name = "/lidar_decision/twist";
+    std::string vision_decision_topic_name = "/vision_decision/twist";
+    std::string gps_decision_topic_name = "/gps_decision/twist";
 
     int refresh_rate = 10;
     lidar_subscriber = public_nh.subscribe(lidar_decision_topic_name, refresh_rate, &FinalDecision::lidarCallBack, this);
@@ -26,7 +26,7 @@ FinalDecision::FinalDecision(int argc, char **argv, std::string node_name) {
     gps_subscriber = public_nh.subscribe(gps_decision_topic_name, refresh_rate, &FinalDecision::gpsCallBack, this);
 
     // Setup Publisher(s)
-    std::string twist_topic = public_nh.resolveName("command");
+    std::string twist_topic = public_nh.resolveName("twist");
     uint32_t queue_size = 10;
     twist_publisher = nh.advertise<geometry_msgs::Twist>(twist_topic, queue_size);
 
@@ -59,6 +59,8 @@ void FinalDecision::publishTwist(geometry_msgs::Twist twist){
 
 
 geometry_msgs::Twist FinalDecision::arbitrator(geometry_msgs::Twist recent_lidar, geometry_msgs::Twist recent_vision, geometry_msgs::Twist recent_gps){
+    // TODO: We should probably wait until we have messages from all 3 decision nodes before we
+    // make a decision here
     if(recent_lidar.angular.z != 0)
         return recent_lidar;
     else if(recent_vision.angular.z != 0)
