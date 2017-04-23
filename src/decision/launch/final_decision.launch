@@ -11,6 +11,7 @@
         <!-- We don't want to show the window with all the images -->
         <arg name="show_image_window" value="false" />
     </include>
+    <include file="$(find decision)/launch/lidar_decision.launch"/>
 
     <!-- Start final_decision -->
     <node name="final_decision" pkg="decision" type="final_decision" output="screen">

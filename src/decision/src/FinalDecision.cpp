@@ -59,14 +59,14 @@ void FinalDecision::publishTwist(geometry_msgs::Twist twist){
 
 
 geometry_msgs::Twist FinalDecision::arbitrator(geometry_msgs::Twist recent_lidar, geometry_msgs::Twist recent_vision, geometry_msgs::Twist recent_gps){
-    // TODO: We should probably wait until we have messages from all 3 decision nodes before we
-    // make a decision here
+    // TODO: We should probably wait until we have messages from all 3 decision nodes before we make a decision here
+    // TODO: Should we? Don't we want to be able to operate with just some of the nodes?
     if(recent_lidar.angular.z != 0)
-        return recent_lidar;
+        publishTwist(recent_lidar);
     else if(recent_vision.angular.z != 0)
-        return recent_vision;
+        publishTwist(recent_vision);
     else
-        return recent_gps;
+        publishTwist(recent_gps);
 }
 
 bool FinalDecision::turning(geometry_msgs::Twist twist){

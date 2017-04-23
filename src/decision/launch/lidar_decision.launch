@@ -1,15 +1,16 @@
 <launch>
 
     <node name="lidar_decision" pkg="decision" type="lidar_decision" output="screen">
+        <!-- The maximum distance at which an obstacle will be considered 
+            dangerous enough to make the robot turn -->
+        <rosparam param="max_obstacle_danger_distance">3</rosparam>
+        <!-- The maximum angle at which an obstacle will be considered 
+            dangerous enough to make the robot turn -->
+        <rosparam param="max_obstacle_danger_angle">1.56</rosparam>
+        <!-- The multiplier for linear speed in the twist message produced -->
+        <rosparam param="twist_linear_speed_multiplier">0.1</rosparam>
+        <!-- The multiplier for angular speed in the twist message produced -->
+        <rosparam param="twist_angular_speed_multiplier">1.0</rosparam>
     </node>
 
-    <!-- Start everything final_decision needs -->
-    <include file="$(find decision)/launch/gps_stack.launch"/>
-    <include file="$(find vision)/launch/vision_stack.launch"/>
-
-    <!-- Start final_decision -->
-    <node name="final_decision" pkg="decision" type="final_decision" output="screen">
-        <remap from="/final_decision/twist" to="/robot/cmd_vel"/>
-    </node>
-        
 </launch>
