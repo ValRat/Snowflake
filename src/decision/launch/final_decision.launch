@@ -1,8 +1,14 @@
 <launch>
 
     <!-- Start everything final_decision needs -->
-    <include file="$(find decision)/launch/gps_stack.launch"/>
-    <include file="$(find vision)/launch/vision_stack.launch"/>
+    <include file="$(find decision)/launch/gps_stack.launch">
+        <!-- We want to override where to send twist messages to -->
+        <arg name="twist_topic" value="/gps_decision/twist" />
+    </include>
+    <include file="$(find vision)/launch/vision_stack.launch">
+        <!-- We want to override where to send twist messages to -->
+        <arg name="twist_topic" value="/vision_decision/twist" />
+    </include>
 
     <!-- Start final_decision -->
     <node name="final_decision" pkg="decision" type="final_decision" output="screen">
