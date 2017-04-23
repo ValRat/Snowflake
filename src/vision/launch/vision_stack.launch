@@ -17,6 +17,7 @@
         <!-- TODO: This should be the default value (so we don't need this remap)-->
         <remap from="/vision_processing/filtered_image" to="/vision/filtered_image" />
         <remap from="/vision_decision/command" to="$(arg twist_topic)"/>
+
         <!-- The value to scale the angular velocity on outputted twist messages by -->
         <rosparam param="angular_vel_multiplier">2.0</rosparam>
     </node>
