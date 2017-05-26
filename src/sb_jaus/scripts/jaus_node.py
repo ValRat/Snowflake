@@ -8,13 +8,22 @@
 
 import rospy
 
-from sensor_msgs import Odometry
+from nav_msgs.msg import Odometry
+
+def robot_state_callback(odom_msg, jaus_api):
+    print("Linear X: " + str(odom_msg.linear.x))
 
 if __name__ = '__main__':
     rospy.init_node('jaus_api')
 
-    rospy.Subscriber('/robot_pose_ekf/odom_combined', Odometry, 
-            robot_state_callback)
+    # Here "JausAPI" is a placeholder for whatever you need to pass
+    # into the callback
+    jaus_api = CreateJausAPI();
 
+    rospy.Subscriber('/robot_pose_ekf/odom_combined', Odometry, 
+            robot_state_callback, jaus_api)
+
+    # You should spawn your thread for Jaus stuff here
+    # then return so "spin()" can run
     rospy.spin()
 
