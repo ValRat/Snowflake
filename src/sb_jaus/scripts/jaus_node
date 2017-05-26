@@ -13,7 +13,7 @@ from nav_msgs.msg import Odometry
 def robot_state_callback(odom_msg, jaus_api):
     print("Linear X: " + str(odom_msg.linear.x))
 
-if __name__ = '__main__':
+if __name__ == '__main__':
     rospy.init_node('jaus_api')
 
     # Here "JausAPI" is a placeholder for whatever you need to pass
@@ -24,6 +24,7 @@ if __name__ = '__main__':
             robot_state_callback, jaus_api)
 
     # You should spawn your thread for Jaus stuff here
-    # then return so "spin()" can run
+    # then return so "rospy.spin()" can run
+
     rospy.spin()
 

@@ -14,6 +14,6 @@ catkin_package()
 
 # Declare executables (python ROS nodes)
 catkin_install_python(PROGRAMS
-    scripts/jaus_node.py
+    scripts/jaus_node
     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

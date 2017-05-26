@@ -1,0 +1,8 @@
+<launch>
+
+    <!-- Launch The JAUS Interface Node -->
+    <node name="jaus" pkg="sb_jaus" type="jaus_api" output="screen">
+        <!-- Params or remaps would go here -->
+    </node>
+
+</launch>
