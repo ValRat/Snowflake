@@ -31,21 +31,24 @@ ZedHeightFilter::ZedHeightFilter(int argc, char **argv, std::string node_name)
 
 void ZedHeightFilter::imageCallBack(const sensor_msgs::PointCloud2::ConstPtr& zed_camera_output) {
     sensor_msgs::PointCloud2 transformed_input;
-    SB_doTransform(*zed_camera_output, transformed_input, base_link_name);
+    sensor_msgs::PointCloud2 zed_modifiable = *zed_camera_output;
+    zed_modifiable.header.frame_id = "zed_actual_frame"; //TODO: Function to just strip off the slash
+    SB_doTransform(zed_modifiable, transformed_input, base_link_name);
 
     // Conversion to PCL datatype
     pcl::PCLPointCloud2 temp;
-    pcl_conversions::toPCL(*zed_camera_output, temp);
+    pcl_conversions::toPCL(transformed_input, temp);
     PointCloudRGB::Ptr point_cloud_RGB(new PointCloudRGB);
     pcl::fromPCLPointCloud2(temp, *point_cloud_RGB);
 
     // Filter Values
-    PointCloudRGB::Ptr output_cloud(new PointCloudRGB);
     pcl::PassThrough<PointRGB> pass;
+    pass.setInputCloud(point_cloud_RGB);
     pass.setFilterFieldName("z");
     pass.setFilterLimits(min_height, max_height);
     pass.filter(*point_cloud_RGB);
-    output_cloud->header.frame_id = base_link_name;
+    //point_cloud_RGB->header.frame_id = base_link_name;
+    ROS_INFO_STREAM("OUTPUT CLOUD POINTS: " << point_cloud_RGB->points.size());
 
     // Publish output
     filtered_image_publisher.publish(point_cloud_RGB);
