@@ -1,9 +1,10 @@
 <launch>
 
-    <!-- Start the Lidar -->
-    <node name="lidar" pkg="sicktoolbox_wrapper" type="sicklms" output="screen">
-        <rosparam param="port">/dev/ttyUSB2</rosparam>
-    </node> 
+    <!-- Launch the zed as a lidar -->
+    <node name="pointcloud_to_laserscan_node" pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" output="screen">
+        <remap from="/cloud_in" to="/zed_output" />
+        <remap from="/scan" to="/scan" />
+    </node>
 
     <!-- Start Lidar Decision -->
     <node name="lidar_decision" pkg="decision" type="lidar_decision" output="screen">
