@@ -37,7 +37,21 @@ add_executable(zed_filter
         src/PointCloudFilter.cpp
         )
 
+add_executable(zed_height_filter
+    src/zed_height_filter.cpp
+    src/ZedHeightFilter.cpp
+    )
+
+
 target_link_libraries(zed_filter
+        ${catkin_LIBRARIES}
+        ${PCL_LIBRARIES}
+        ${PCL_COMMON_LIBRARIES}
+        ${PCL_IO_LIBRARIES}
+        ${sb_utils_LIBRARIES}
+        )
+
+target_link_libraries(zed_height_filter
         ${catkin_LIBRARIES}
         ${PCL_LIBRARIES}
         ${PCL_COMMON_LIBRARIES}
