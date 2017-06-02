@@ -32,7 +32,6 @@ private:
 
     ros::Subscriber raw_image_subscriber;
     ros::Publisher filtered_image_publisher;
-    PointCloudFilter filter;
     std::string base_link_name;
 
     void imageCallBack(const sensor_msgs::PointCloud2::ConstPtr& zed_camera_output);

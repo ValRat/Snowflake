@@ -14,8 +14,8 @@ ZedHeightFilter::ZedHeightFilter(int argc, char **argv, std::string node_name)
     ros::NodeHandle private_nh("~");
 
     // Get Params
-    SB_getParam(private_nh, "min_height" min_height, 0.25);
-    SB_getParam(private_nh, "max_height" max_height, 10);
+    SB_getParam(private_nh, "min_height", min_height, 0.25);
+    SB_getParam(private_nh, "max_height", max_height, 10.0);
 
     // Setup Subscriber(s)
     std::string camera_image_topic_name = "/zed/point_cloud/cloud_registered";
