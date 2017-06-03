@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 
 # Created By: Gareth Ellis
 # Created On: May 25, 2017
@@ -7,24 +7,78 @@
 #               JAUS library and ROS
 
 import rospy
+from concurrent.futures import ProcessPoolExecutor
+import time
+import asyncio
+from format.jaus.judp import ConnectedJUDPProtocol, Packet, make_multicast_socket
+from format.jaus import Id, Component
+from format.jaus.services import *
 
 from nav_msgs.msg import Odometry
+from geometry_msgs.msg import Twist
 
-def robot_state_callback(odom_msg, jaus_api):
+SUB_SYSTEM = 101
+#192.168.1.101
+
+def robot_state_callback(odom_msg):
     print("Linear X: " + str(odom_msg.linear.x))
 
+def start_jaus(event_loop):
+    # Platform Management will have node id of 1 and component id of 1
+    platform_management_component = \
+        Component(id=Id(subsystem=SUB_SYSTEM, node=1, component=1),
+                  name="PlatformManagement",
+                  node_name="plat_man_comp",
+                  subsystem_name="jackfrostpm",
+                  services=[
+                      TransportService,
+                      DiscoveryService,
+                      EventsService,
+                      LivenessService,
+                      AccessControlService
+                  ]
+                  )
+
+    #Navigation and Reporting Component is arbitrarily assigned node id of 1 and component id of 2
+    navigation_reporting_component = \
+        Component(id=Id(subsystem=SUB_SYSTEM, node=1, component=2),
+                  name="NavigationReport",
+                  node_name="nav_rep_comp",
+                  subsystem_name="jackfrostnr",
+                  services=[
+                    TransportService,
+                    EventsService,
+                    AccessControlService,
+                    ManagementService,
+                    LivenessService,
+                    LocalWaypointDriverService,
+                    LocalWaypointListDriverService,
+                    VelocityStateSensorService,
+                    LocalPoseSensorService
+                  ]
+                  )
+
+    _, protocol = event_loop.run_until_complete(event_loop.create_datagram_endpoint(
+        lambda: ConnectedJUDPProtocol(loop=event_loop),
+        sock=make_multicast_socket(3794)))
+
+    # Hook up the Component with the protocol
+    plat_man_connection = protocol.connect(Id(subsystem=SUB_SYSTEM, node=1, component=1))
+    platform_management_component.listen(plat_man_connection)
+
+    nav_rep_connection = protocol.connect(Id(subsystem=SUB_SYSTEM, node=1, component=2))
+    navigation_reporting_component.listen(nav_rep_connection)
+
 if __name__ == '__main__':
+
     rospy.init_node('jaus_api')
+    # Create subscribers
+    rospy.Subscriber('/cmd_vel', Twist, 
+            robot_state_callback)
 
-    # Here "JausAPI" is a placeholder for whatever you need to pass
-    # into the callback
-    jaus_api = CreateJausAPI();
+    # Start Jaus
+    event_loop = asyncio.get_event_loop()
+    start_jaus(event_loop)
 
-    rospy.Subscriber('/robot_pose_ekf/odom_combined', Odometry, 
-            robot_state_callback, jaus_api)
-
-    # You should spawn your thread for Jaus stuff here
-    # then return so "rospy.spin()" can run
-
-    rospy.spin()
+    event_loop.run_forever()
 
