@@ -13,3 +13,6 @@
 [submodule "src/razor_imu_9dof"]
 	path = src/razor_imu_9dof
 	url = https://github.com/UBC-Snowbots/razor_imu_9dof.git
+[submodule "src/sb_jaus/src/jaus"]
+	path = src/sb_jaus/src/jaus
+	url = https://github.com/fhackett/format.py.git
