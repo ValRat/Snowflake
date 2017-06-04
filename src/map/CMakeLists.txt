@@ -18,8 +18,8 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 find_package(PCL REQUIRED)
-
 find_package(OpenCV REQUIRED)
+find_package(sb_utils REQUIRED)
 
 
 catkin_package(
@@ -34,6 +34,7 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
   ${PCL_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
+  ${sb_utils_INCLUDE_DIRS}
 )
 link_directories(${PCL_LIBRARY_DIRS})
 link_directories(${OpenCV_INCLUDE_DIRS})
@@ -44,7 +45,13 @@ add_definitions(${OpenCV_INCLUDE_DIRS})
 
 add_executable(map src/Map.cpp src/map.cpp include/Map.h)
 add_executable(map_test_pub test/test_map_publishers.cpp)
-target_link_libraries(map ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${PCL_COMMON_LIBRARIES} ${PCL_IO_LIBRARIES})
+target_link_libraries(map 
+    ${catkin_LIBRARIES} 
+    ${PCL_LIBRARIES} 
+    ${PCL_COMMON_LIBRARIES} 
+    ${PCL_IO_LIBRARIES} 
+    ${sb_utils_LIBRARIES}
+    )
 target_link_libraries(map_test_pub ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${PCL_COMMON_LIBRARIES} ${PCL_IO_LIBRARIES})
 add_executable(transform src/transformTest.cpp)
 target_link_libraries(transform ${catkin_LIBRARIES})

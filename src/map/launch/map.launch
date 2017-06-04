@@ -1,0 +1,10 @@
+<launch>
+    <!-- Publish static transform between base_link and the lidar -->
+    <node name="imu_static_transform" pkg="tf" type="static_transform_publisher" 
+        args="0.3 0 0 0 0 0 base_link lidar 100"/>
+
+    <node name="map" pkg="map" type="map" output="screen">
+       <remap from="vision" to="/zed_filter/filtered_point_cloud" /> 
+    </node>
+
+</launch>

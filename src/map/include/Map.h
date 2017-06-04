@@ -31,6 +31,7 @@
 #include <memory>
 #include <tf2_ros/transform_listener.h>
 #include <tf2_ros/buffer.h>
+#include <sb_utils.h>
 
 class Map {
 public:
@@ -59,6 +60,8 @@ private:
     ros::Publisher combined_map_pub;
     grid_map::GridMap* map;
     ros::Publisher test_pub;
+
+    std::string base_frame_name;
 
     // TF definitions
     tf2_ros::Buffer tfBuffer;

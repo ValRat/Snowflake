@@ -31,6 +31,9 @@ Map::Map(int argc, char **argv, std::string node_name){
     lidar_map_pub = nh.advertise<nav_msgs::OccupancyGrid>("lidar_map", 1, true);
     combined_map_pub = nh.advertise<nav_msgs::OccupancyGrid>("map", 1, true);
 
+    // Get Params
+    SB_getParam(public_nh, "base_frame", base_frame_name, std::string("odom_combined"));
+
     //Initialize TFs
     tfListener = new tf2_ros::TransformListener(tfBuffer);
 }
@@ -38,7 +41,7 @@ Map::Map(int argc, char **argv, std::string node_name){
 void Map::visionCallback(const sensor_msgs::PointCloud2::ConstPtr& msg) {
 
     sensor_msgs::PointCloud2 transformed_ros_cloud;
-    transformPointCloud(*msg, transformed_ros_cloud, "odom");
+    transformPointCloud(*msg, transformed_ros_cloud, base_frame_name);
 
     pcl::PointCloud<pcl::PointXYZ> cloud;
     convertPointCloud(transformed_ros_cloud, cloud);
@@ -65,7 +68,7 @@ void Map::lidarCallback(const sensor_msgs::LaserScan::ConstPtr& msg) {
     ROS_INFO("Frame of input: %s", msg->header.frame_id.c_str());
 
     sensor_msgs::PointCloud2 transformed_ros_cloud;
-    transformPointCloud(ros_cloud, transformed_ros_cloud, "odom");
+    transformPointCloud(ros_cloud, transformed_ros_cloud, base_frame_name);
 
     pcl::PointCloud<pcl::PointXYZ> cloud;
     convertPointCloud(transformed_ros_cloud, cloud);
@@ -116,7 +119,7 @@ void Map::setUpMap(grid_map::GridMap* map){
     map->add("combined");
 
     // TODO: set this frame to "map" and create transform between "map" and "odom"
-    map->setFrameId("odom");
+    map->setFrameId(base_frame_name);
     map->setGeometry(grid_map::Length(map_width, map_height), map_res);
 }
 
