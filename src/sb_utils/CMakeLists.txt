@@ -9,6 +9,7 @@ add_definitions(-std=c++14)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   tf2_geometry_msgs
+  tf2_sensor_msgs
 )
 # This is required for certain doTransform functions in tf2_geometry_msgs
 find_package(orocos_kdl)
@@ -23,10 +24,11 @@ find_package(orocos_kdl)
 ## LIBRARIES: libraries you create in this project that dependent projects also need
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
+## !!!! WHATEVER IS IN find_package ABOVE MUST ALSO BE DOWN HERE !!!
 catkin_package(
     INCLUDE_DIRS include
     LIBRARIES sb_utils
-    CATKIN_DEPENDS roscpp
+    CATKIN_DEPENDS roscpp tf2_sensor_msgs
 )
 
 
