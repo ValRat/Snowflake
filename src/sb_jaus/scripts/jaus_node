@@ -10,13 +10,14 @@ import rospy
 from concurrent.futures import ProcessPoolExecutor
 import time
 import asyncio
+from math import atan2
 from format.jaus.judp import ConnectedJUDPProtocol, Packet, make_multicast_socket
 from format.jaus import Id, Component
 from format.jaus.services import *
 from format.jaus.core.management import *
 
 from nav_msgs.msg import Odometry
-from geometry_msgs.msg import Twist
+from geometry_msgs.msg import *
 
 SUB_SYSTEM = 101
 #192.168.1.101
@@ -24,47 +25,56 @@ SUB_SYSTEM = 101
 # JAUS STATE GLOBAL VARIABLES
 jaus_emergency_state = ManagementStatus.STANDBY
 
-def robot_state_callback(odom_msg):
-    print("Linear X: " + str(odom_msg.linear.x))
+# CURRENT ROBOT STATE
+robot_state = PoseWithCovarianceStamped()
+
+# Platform Management will have node id of 1 and component id of 1
+platform_management_component = \
+    Component(id=Id(subsystem=SUB_SYSTEM, node=1, component=1),
+              name="PlatformManagement",
+              node_name="plat_man_comp",
+              subsystem_name="jackfrostpm",
+              services=[
+                  TransportService,
+                  DiscoveryService,
+                  EventsService,
+                  LivenessService,
+                  AccessControlService
+              ]
+              )
+
+
+#Navigation and Reporting Component is arbitrarily assigned node id of 1 and component id of 2
+navigation_reporting_component = \
+    Component(id=Id(subsystem=SUB_SYSTEM, node=1, component=2),
+              name="NavigationReport",
+              node_name="nav_rep_comp",
+              subsystem_name="jackfrostnr",
+              services=[
+                TransportService,
+                EventsService,
+                AccessControlService,
+                ManagementService,
+                LivenessService,
+                LocalWaypointDriverService,
+                LocalWaypointListDriverService,
+                VelocityStateSensorService,
+                LocalPoseSensorService
+              ]
+              )
+
+def robot_state_callback(pose_stamped):
+    robot_state = pose_stamped
+    x = pose_stamped.pose.pose.position.x
+    y = pose_stamped.pose.pose.position.y
+    q = pose_stamped.pose.pose.orientation
+    yaw = atan2(2.0*(q.y*q.z + q.w*q.x), q.w*q.w - q.x*q.x - q.y*q.y + q.z*q.z)
+    msg = navigation_reporting_component.local_pose_sensor
+    msg.x = x
+    msg.y = y
+    msg.yaw = yaw
 
 def start_jaus(event_loop):
-    # Platform Management will have node id of 1 and component id of 1
-    platform_management_component = \
-        Component(id=Id(subsystem=SUB_SYSTEM, node=1, component=1),
-                  name="PlatformManagement",
-                  node_name="plat_man_comp",
-                  subsystem_name="jackfrostpm",
-                  services=[
-                      TransportService,
-                      DiscoveryService,
-                      EventsService,
-                      LivenessService,
-                      AccessControlService
-                  ]
-                  )
-    async def on_status_change(dct):
-        print(dct['status'])
-    platform_management_component.management.state.watcher(on_status_change, keys=('status',))
-
-    #Navigation and Reporting Component is arbitrarily assigned node id of 1 and component id of 2
-    navigation_reporting_component = \
-        Component(id=Id(subsystem=SUB_SYSTEM, node=1, component=2),
-                  name="NavigationReport",
-                  node_name="nav_rep_comp",
-                  subsystem_name="jackfrostnr",
-                  services=[
-                    TransportService,
-                    EventsService,
-                    AccessControlService,
-                    ManagementService,
-                    LivenessService,
-                    LocalWaypointDriverService,
-                    LocalWaypointListDriverService,
-                    VelocityStateSensorService,
-                    LocalPoseSensorService
-                  ]
-                  )
-
     _, protocol = event_loop.run_until_complete(event_loop.create_datagram_endpoint(
         lambda: ConnectedJUDPProtocol(loop=event_loop),
         sock=make_multicast_socket(3794)))
@@ -75,16 +85,17 @@ def start_jaus(event_loop):
 
     nav_rep_connection = protocol.connect(Id(subsystem=SUB_SYSTEM, node=1, component=2))
     navigation_reporting_component.listen(nav_rep_connection)
-    
-    while True:
-        jaus_emergency_state = navigation_reporting_component.services.get('management').status;        
+
+    async def on_status_change(dct):
+        print(dct['status'])
+    navigation_reporting_component.management.state.watcher(on_status_change, keys=('status',))
 
 
 if __name__ == '__main__':
 
     rospy.init_node('jaus_api')
     # Create subscribers
-    rospy.Subscriber('/cmd_vel', Twist, 
+    rospy.Subscriber('/robot_pose_ekf/odom_combined', PoseWithCovarianceStamped, 
             robot_state_callback)
 
     # Start Jaus
