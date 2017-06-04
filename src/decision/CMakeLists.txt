@@ -76,10 +76,6 @@ if (CATKIN_ENABLE_TESTING)
     catkin_add_gtest(final-decision-test test/final-decision-test.cpp src/FinalDecision.cpp)
     target_link_libraries(final-decision-test ${catkin_LIBRARIES})
 
-    catkin_add_gtest(gps-manager-test test/gps-manager-test.cpp src/GpsManager.cpp)
-    target_link_libraries(gps-manager-test ${catkin_LIBRARIES})
-
-
     # rostest
     find_package(rostest REQUIRED)
 
