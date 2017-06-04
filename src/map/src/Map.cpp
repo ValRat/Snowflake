@@ -24,7 +24,7 @@ Map::Map(int argc, char **argv, std::string node_name){
     // Initialize subscribers
     // Buffers are bad because we might be processing old data
     vision_sub = nh.subscribe("vision", 1, &Map::visionCallback, this);
-    lidar_sub = nh.subscribe("/robot/laser/scan", 1, &Map::lidarCallback, this);
+    lidar_sub = nh.subscribe("/scan", 1, &Map::lidarCallback, this);
 
     // Initialize publishers
     vision_map_pub = nh.advertise<nav_msgs::OccupancyGrid>("vision_map", 1, true);
