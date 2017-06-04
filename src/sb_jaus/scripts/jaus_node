@@ -42,6 +42,9 @@ def start_jaus(event_loop):
                       AccessControlService
                   ]
                   )
+    async def on_status_change(dct):
+        print(dct['status'])
+    platform_management_component.management.state.watcher(on_status_change, keys=('status',))
 
     #Navigation and Reporting Component is arbitrarily assigned node id of 1 and component id of 2
     navigation_reporting_component = \
