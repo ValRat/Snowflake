@@ -40,7 +40,7 @@ add_executable(lidar_decision src/lidar_decision.cpp src/LidarDecision.cpp inclu
 add_executable(vision_decision src/vision_decision.cpp src/VisionDecision.cpp include/VisionDecision.h)
 add_executable(gps_decision src/gps_decision.cpp src/GpsDecision.cpp src/GpsMover.cpp include/GpsDecision.h include/GpsMover.h)
 add_executable(final_decision src/final_decision.cpp src/FinalDecision.cpp include/FinalDecision.h)
-add_executable(gps_manager src/gps_manager.cpp src/GpsManager.cpp include/GpsManager.h)
+add_executable(gps_manager src/gps_manager3.cpp src/GpsManager3.cpp include/GpsManager3.h)
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(sample_package_node
