@@ -34,6 +34,10 @@ private:
     ros::Publisher filtered_image_publisher;
     PointCloudFilter filter;
     std::string base_link_name;
+    std::chrono::high_resolution_clock::time_point last_message_time;
+
+    tf2_ros::Buffer tfBuffer;
+    tf2_ros::TransformListener tfListener;
 
     void imageCallBack(const sensor_msgs::PointCloud2::ConstPtr& zed_camera_output);
 };

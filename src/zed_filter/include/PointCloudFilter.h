@@ -12,6 +12,7 @@
 #include <pcl/filters/extract_indices.h>
 #include <pcl/point_types.h>
 #include <pcl/point_types_conversion.h>
+#include <chrono>
 
 class PointCloudFilter {
 

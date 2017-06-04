@@ -10,6 +10,8 @@ find_package(catkin REQUIRED COMPONENTS
 find_package(PCL REQUIRED)
 find_package(sb_utils REQUIRED)
 
+add_definitions(-std=c++14)
+
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES zed_filter

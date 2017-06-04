@@ -37,12 +37,12 @@ void PointCloudFilter::PointCloudRGBtoPointCloudHSV(PointCloudRGB::Ptr in,
     out->width   = in->width;
     out->height  = in->height;
 
-    PointCloudRGB::iterator it;
-    for (it = in->points.begin(); it != in->points.end(); it++){
-        PointHSV p;
-        PointRGBtoPointHSV(*it, p);
-        out->points.push_back(p);
-    }
+    for (size_t i = 0; i < in->points.size (); i+=4)
+        {
+            PointHSV p;
+            PointRGBtoPointHSV(in->points[i], p);
+            out->points.push_back (p);
+        }
 }
 
 void PointCloudFilter::PointRGBtoPointHSV(PointRGB& in, PointHSV& out){
@@ -78,10 +78,12 @@ void PointCloudFilter::PointRGBtoPointHSV(PointRGB& in, PointHSV& out){
 
 
 bool PointCloudFilter::filterCloud(PointCloudRGB::Ptr input, PointCloudRGB::Ptr output){
+    //std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
     PointCloudHSV::Ptr point_cloud_HSV(new PointCloudHSV);
     PointCloudRGBtoPointCloudHSV(input, point_cloud_HSV);
+    //std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
     //ROS_INFO("Incoming points: %u", input->points.size());
-    //ROS_INFO("Incoming points: %u", point_cloud_HSV->points.size());
+    ROS_INFO("Incoming points: %u", point_cloud_HSV->points.size());
 
     // Filter out non-white points from the point cloud
     PointCloudHSV::Ptr filtered_point_cloud(new PointCloudHSV);
@@ -99,14 +101,14 @@ bool PointCloudFilter::filterCloud(PointCloudRGB::Ptr input, PointCloudRGB::Ptr 
     pass.setFilterFieldName("s");
     pass.setFilterLimits(filter_values.s_min, filter_values.s_max);
     pass.filter(*filtered_point_cloud);
-    //ROS_INFO("Points after s: %u", filtered_point_cloud->points.size());
+    ROS_INFO("Points after s: %u", filtered_point_cloud->points.size());
 
     // Filter Value
     pass.setInputCloud(filtered_point_cloud);
     pass.setFilterFieldName("v");
     pass.setFilterLimits(filter_values.v_min, filter_values.v_max);
     pass.filter(*filtered_point_cloud);
-    //ROS_INFO("Points after v: %u", filtered_point_cloud->points.size());
+    ROS_INFO("Points after v: %u", filtered_point_cloud->points.size());
 
     // Clear the output point cloud and populates it
     output->points.clear();
@@ -130,6 +132,7 @@ bool PointCloudFilter::filterCloud(PointCloudRGB::Ptr input, PointCloudRGB::Ptr 
 
         output->points.push_back(current_point);
     }
-    output->header.frame_id = input->header.frame_id;
+    output->header = input->header;
+    ROS_INFO_STREAM("Output: " << output->points.size());
     return true;
 }

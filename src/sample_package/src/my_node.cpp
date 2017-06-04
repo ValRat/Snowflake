@@ -12,6 +12,8 @@
 int main(int argc, char **argv){
     // Setup your ROS node
     std::string node_name = "my_node";
+    ros::init(argc, argv, node_name);
+
 
     // Create an instance of your class
     MyClass my_class(argc, argv, node_name);
