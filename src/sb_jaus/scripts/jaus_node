@@ -13,12 +13,16 @@ import asyncio
 from format.jaus.judp import ConnectedJUDPProtocol, Packet, make_multicast_socket
 from format.jaus import Id, Component
 from format.jaus.services import *
+from format.jaus.core.management import *
 
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Twist
 
 SUB_SYSTEM = 101
 #192.168.1.101
+
+# JAUS STATE GLOBAL VARIABLES
+jaus_emergency_state = ManagementStatus.STANDBY
 
 def robot_state_callback(odom_msg):
     print("Linear X: " + str(odom_msg.linear.x))
@@ -68,6 +72,10 @@ def start_jaus(event_loop):
 
     nav_rep_connection = protocol.connect(Id(subsystem=SUB_SYSTEM, node=1, component=2))
     navigation_reporting_component.listen(nav_rep_connection)
+    
+    while True:
+        jaus_emergency_state = navigation_reporting_component.services.get('management').status;        
+
 
 if __name__ == '__main__':
 
