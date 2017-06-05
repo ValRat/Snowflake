@@ -36,15 +36,15 @@ public:
      *
      * @return              The Twist message with the highest priority.
      */
-    geometry_msgs::Twist arbitrator(geometry_msgs::Twist recent_lidar, geometry_msgs::Twist recent_vision, geometry_msgs::Twist recent_gps);
+    geometry_msgs::Twist arbitrator(decision::TwistConfidence recent_lidar, decision::TwistConfidence recent_vision, decision::TwistConfidence recent_gps);
 
 private:
     // This is called whenever a new message is received
-    void gpsCallBack(const geometry_msgs::Twist::ConstPtr& gps_decision);
+    void gpsCallBack(const decision::TwistConfidence::ConstPtr& gps_decision);
     // This is called whenever a new message is received
-    void lidarCallBack(const geometry_msgs::Twist::ConstPtr& lidar_decision);
+    void lidarCallBack(const decision::TwistConfidence::ConstPtr& lidar_decision);
     // This is called whenever a new message is received
-    void visionCallBack(const geometry_msgs::Twist::ConstPtr& vision_decision);
+    void visionCallBack(const decision::TwistConfidence::ConstPtr& vision_decision);
     void imuCallback(const sensor_msgs::Imu::ConstPtr& imu);
     void publishTwist(geometry_msgs::Twist twist);
     // This function evaluates whether GPS, Vision, or Lidar is sending a turning command
@@ -57,9 +57,9 @@ private:
     ros::Subscriber gps_subscriber;
     ros::Subscriber imu_subscriber;
     ros::Publisher twist_publisher;
-    geometry_msgs::Twist recent_lidar;
-    geometry_msgs::Twist recent_vision;
-    geometry_msgs::Twist recent_gps;
+    decision::TwistConfidence recent_lidar;
+    decision::TwistConfidence recent_vision;
+    decision::TwistConfidence recent_gps;
 };
 
 #endif //DECISION_FINAL_DECISION_H
