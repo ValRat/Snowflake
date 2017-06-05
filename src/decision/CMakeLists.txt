@@ -8,16 +8,27 @@ find_package(catkin REQUIRED COMPONENTS
         roscpp
         std_msgs
         cv_bridge
+        message_generation
         )
 find_package(OpenCV REQUIRED)
 find_package(sb_utils REQUIRED)
 
 add_definitions(-std=c++14)
 
-catkin_package(
-  INCLUDE_DIRS include
+add_message_files(
+        FILES
+        TwistConfidence.msg
 )
 
+generate_messages(
+        DEPENDENCIES
+        decision
+)
+
+catkin_package(
+  INCLUDE_DIRS include messages
+  CATKIN_DEPENDS message_runtime
+)
 
 ###########
 ## Build ##
