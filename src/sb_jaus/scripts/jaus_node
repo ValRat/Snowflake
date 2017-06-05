@@ -66,6 +66,7 @@ def robot_state_callback(pose_stamped):
     msg.x = x
     msg.y = y
     msg.yaw = yaw
+    print("Recived and updated message")
 
 def start_jaus(event_loop):
     _, protocol = event_loop.run_until_complete(event_loop.create_datagram_endpoint(
