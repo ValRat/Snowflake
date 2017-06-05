@@ -49,7 +49,8 @@ public:
      * @return the angle of the line to the positive y-axis.
      */
     static int getDesiredAngle(double numSamples, const sensor_msgs::Image::ConstPtr &image,
-                               double rolling_average_constant);
+                               double rolling_average_constant, double percent_of_samples_needed,
+                               double percent_of_image_sampled);
 
     /**
      * Determines the angle of the line parsed from the left or right side.
@@ -187,6 +188,12 @@ private:
     // Dictates how much new samples will influence the current
     // average (Smaller value means less influence).
     double rolling_average_constant;
+
+    // Dictates how much of the image samples need to be valid.
+    double percent_of_samples_needed;
+
+    // Dictates how much of the image is sampled
+    double percent_of_image_sampled;
 };
 
 #endif //DECISION_VISION_DECISION_H

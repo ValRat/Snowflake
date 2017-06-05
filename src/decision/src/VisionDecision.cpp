@@ -28,6 +28,8 @@ VisionDecision::VisionDecision(int argc, char **argv, std::string node_name) {
     SB_getParam(private_nh, "angular_vel_multiplier", angular_velocity_multiplier, 1.0);
     SB_getParam(private_nh, "angular_vel_cap", angular_velocity_cap, 1.0);
     SB_getParam(private_nh, "rolling_average_constant", rolling_average_constant, 0.5);
+    SB_getParam(private_nh, "percent_of_samples_needed", percent_of_samples_needed, 0.125);
+    SB_getParam(private_nh, "percent_of_image_sampled", percent_of_image_sampled, 0.25);
 }
 
 // This is called whenever a new message is received
