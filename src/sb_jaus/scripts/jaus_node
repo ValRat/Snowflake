@@ -2,7 +2,6 @@
 
 # Created By: Gareth Ellis
 # Created On: May 25, 2017
-# TODO: Get Finn to elaborate on below description
 # Description: This node acts as the interface between Snowbot's in-house
 #               JAUS library and ROS
 
@@ -58,10 +57,9 @@ navigation_reporting_component = \
               )
 
 async def on_pose_change(dct):
-    print("Pose change: " + dct['x'] + " " + dct['y'] + " " + dct['yaw'])
+    print("Pose change: " + str(dct['x']) + " " + str(dct['y']) + " " + str(dct['yaw']))
     #navigation_reporting_component.management.state.watcher(on_status_change, keys=('x','y','yaw'))
 navigation_reporting_component.local_pose_sensor.state.watcher(on_pose_change, keys=('x','y','yaw'))
-
 
 def robot_state_callback(pose_stamped):
     x = pose_stamped.pose.pose.position.x
@@ -72,7 +70,7 @@ def robot_state_callback(pose_stamped):
     msg.x = x
     msg.y = y
     msg.yaw = yaw
-    print("Recived and updated message")
+    print("Recived ROS message")
 
 def start_jaus(event_loop):
     _, protocol = event_loop.run_until_complete(event_loop.create_datagram_endpoint(
@@ -86,21 +84,15 @@ def start_jaus(event_loop):
     nav_rep_connection = protocol.connect(Id(subsystem=SUB_SYSTEM, node=1, component=2))
     navigation_reporting_component.listen(nav_rep_connection)
 
-#    async def on_status_change(dct):
-#        print(dct['status'])
-#    navigation_reporting_component.management.state.watcher(on_status_change, keys=('status',))
 
+# Start ROS stuff
+rospy.init_node('jaus_api')
+rospy.Subscriber('/robot_pose_ekf/odom_combined', PoseWithCovarianceStamped, 
+        robot_state_callback)
 
-if __name__ == '__main__':
+# Start Jaus
+event_loop = asyncio.get_event_loop()
+start_jaus(event_loop)
 
-    rospy.init_node('jaus_api')
-    # Create subscribers
-    rospy.Subscriber('/robot_pose_ekf/odom_combined', PoseWithCovarianceStamped, 
-            robot_state_callback)
-
-    # Start Jaus
-    event_loop = asyncio.get_event_loop()
-    start_jaus(event_loop)
-
-    event_loop.run_forever()
+event_loop.run_forever()
 
