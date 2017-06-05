@@ -25,7 +25,7 @@ LidarDecision::LidarDecision(int argc, char **argv, std::string node_name) {
     // Setup Publisher(s)
     std::string twist_topic = public_nh.resolveName("twist");
     uint32_t queue_size = 10;
-    twist_publisher = nh.advertise<geometry_msgs::Twist>(twist_topic, queue_size);
+    twist_publisher = nh.advertise<decision::TwistConfidence>(twist_topic, queue_size);
 
     // Get Param(s)
     SB_getParam(public_nh, "max_obstacle_angle_diff", max_obstacle_angle_diff, (float) M_PI / 36);
@@ -33,6 +33,11 @@ LidarDecision::LidarDecision(int argc, char **argv, std::string node_name) {
     SB_getParam(public_nh, "max_obstacle_danger_angle", max_obstacle_danger_angle, (float) M_PI / 4);
     SB_getParam(public_nh, "twist_angular_speed_multiplier", twist_angular_speed_multiplier, (float) 3);
     SB_getParam(public_nh, "twist_linear_speed_multiplier", twist_linear_speed_multiplier, (float) 3);
+
+    SB_getParam(public_nh, "min_dangerscore", min_dangerscore, (float) 1.7);
+    SB_getParam(public_nh, "max_dangerscore", max_dangerscore, (float) 2.4);
+    SB_getParam(public_nh, "min_confidence", min_confidence, (float) 60);
+    SB_getParam(public_nh, "max_confidence", max_confidence, (float) 90);
 }
 
 // This is called whenever a new message is received
@@ -66,7 +71,7 @@ decision::TwistConfidence LidarDecision::generate_twist_message(const sensor_msg
         forward_with_care.angular.y = 0;
         forward_with_care.angular.z = 0;
         twistConfidence.twist = forward_with_care;
-        twistConfidence.confidence = 0.2;
+        twistConfidence.confidence = 20;
         twistConfidence.header.stamp = ros::Time::now();
         return twistConfidence;
     }
@@ -165,7 +170,12 @@ decision::TwistConfidence LidarDecision::twist_message_from_obstacle(LidarObstac
 
         twistConfidence.header.stamp = ros::Time::now();
         twistConfidence.twist = twist;
-        twistConfidence.confidence = obstacle.dangerScore();
+        // ---- Conversion
+        float slope = 1.0 * (max_confidence - min_confidence)/(max_dangerscore - min_dangerscore);
+        float confidence_from_dangerscore = min_confidence + slope * (obstacle.dangerScore() - min_dangerscore);
+
+        // ----
+        twistConfidence.confidence = confidence_from_dangerscore;
         return twistConfidence;
 
     } else {

@@ -44,7 +44,7 @@ public:
      *
      * @return a vector of all obstacles
      */
-    static std::vector<LidarObstacle> findObstacles(const sensor_msgs::LaserScan& scan,
+     std::vector<LidarObstacle> findObstacles(const sensor_msgs::LaserScan& scan,
                                                     float max_obstacle_angle_diff,
                                                     float max_obstacle_distance_diff);
 
@@ -55,7 +55,7 @@ public:
      *
      * @return the most dangerous obstacle out of those given
      */
-    static LidarObstacle mostDangerousObstacle(const std::vector<LidarObstacle> obstacles);
+     LidarObstacle mostDangerousObstacle(const std::vector<LidarObstacle> obstacles);
 
     /**
      * Merges obstacles that are separated by less then max_angle_diff together
@@ -68,7 +68,7 @@ public:
      * @param max_distance_diff the max difference that two obstacles may differ by and still be considered
      *                      part of the same obstacle
      */
-    static void mergeSimilarObstacles(std::vector<LidarObstacle>& obstacles,
+     void mergeSimilarObstacles(std::vector<LidarObstacle>& obstacles,
                                       float max_angle_diff,
                                       float max_distance_diff);
 
@@ -85,7 +85,7 @@ public:
      *
      * @return a twist message
      */
-    static decision::TwistConfidence twist_message_from_obstacle(LidarObstacle obstacle,
+     decision::TwistConfidence twist_message_from_obstacle(LidarObstacle obstacle,
                                                             distance_t danger_distance,
                                                             angle_t danger_angle,
                                                             float linear_vel_multiplier,
@@ -109,6 +109,12 @@ private:
     float twist_linear_speed_multiplier;
     ros::Subscriber scan_subscriber;
     ros::Publisher twist_publisher;
+
+    float min_dangerscore;
+    float max_dangerscore;
+    float max_confidence;
+    float min_confidence;
+
 };
 
 
