@@ -21,6 +21,7 @@
 #include <std_msgs/String.h>
 #include <geometry_msgs/Twist.h>
 #include <sensor_msgs/LaserScan.h>
+#include "decision/TwistConfidence.h"
 
 
 class LidarDecision {
@@ -32,7 +33,7 @@ public:
      *
      * @return A twist command from a given lidar scan that will best avoid obstacles in the scan
      */
-    geometry_msgs::Twist generate_twist_message(const sensor_msgs::LaserScan::ConstPtr &raw_scan);
+    decision::TwistConfidence generate_twist_message(const sensor_msgs::LaserScan::ConstPtr &raw_scan);
 
     /**
      * Finds all obstacles in a given scan
@@ -84,7 +85,7 @@ public:
      *
      * @return a twist message
      */
-    static geometry_msgs::Twist twist_message_from_obstacle(LidarObstacle obstacle,
+    static decision::TwistConfidence twist_message_from_obstacle(LidarObstacle obstacle,
                                                             distance_t danger_distance,
                                                             angle_t danger_angle,
                                                             float linear_vel_multiplier,

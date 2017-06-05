@@ -41,7 +41,7 @@ LidarDecision::LidarDecision(int argc, char **argv, std::string node_name) {
         twist_publisher.publish(generate_twist_message(raw_scan));
     }
 
-geometry_msgs::Twist LidarDecision::generate_twist_message(const sensor_msgs::LaserScan::ConstPtr &raw_scan) {
+decision::TwistConfidence LidarDecision::generate_twist_message(const sensor_msgs::LaserScan::ConstPtr &raw_scan) {
 
     // Find all the obstacles
     std::vector<LidarObstacle> obstacles = findObstacles(*raw_scan, max_obstacle_angle_diff, max_obstacle_distance_diff);
@@ -56,14 +56,19 @@ geometry_msgs::Twist LidarDecision::generate_twist_message(const sensor_msgs::La
                                            max_obstacle_danger_angle, twist_linear_speed_multiplier, twist_angular_speed_multiplier);
     } else {
         // We don't have any obstacles, return a all zero twist message
-        geometry_msgs::Twist all_zero;
-        all_zero.linear.x = 0;
-        all_zero.linear.y = 0;
-        all_zero.linear.z = 0;
-        all_zero.angular.x = 0;
-        all_zero.angular.y = 0;
-        all_zero.angular.z = 0;
-        return all_zero;
+        // or go forward very carefully ;D
+        decision::TwistConfidence twistConfidence;
+        geometry_msgs::Twist forward_with_care;
+        forward_with_care.linear.x = 0.3;
+        forward_with_care.linear.y = 0;
+        forward_with_care.linear.z = 0;
+        forward_with_care.angular.x = 0;
+        forward_with_care.angular.y = 0;
+        forward_with_care.angular.z = 0;
+        twistConfidence.twist = forward_with_care;
+        twistConfidence.confidence = 0.2;
+        twistConfidence.header.stamp = ros::Time::now();
+        return twistConfidence;
     }
 
 }
@@ -123,11 +128,12 @@ void LidarDecision::mergeSimilarObstacles(std::vector<LidarObstacle>& obstacles,
     }
 }
 
-geometry_msgs::Twist LidarDecision::twist_message_from_obstacle(LidarObstacle obstacle,
+decision::TwistConfidence LidarDecision::twist_message_from_obstacle(LidarObstacle obstacle,
                                                                 distance_t danger_distance,
                                                                 angle_t danger_angle,
                                                                 float linear_vel_multiplier,
                                                                 float angular_vel_multiplier) {
+    decision::TwistConfidence twistConfidence;
     geometry_msgs::Twist twist;
     twist.linear.x = 0;
     twist.linear.y = 0;
@@ -156,6 +162,17 @@ geometry_msgs::Twist LidarDecision::twist_message_from_obstacle(LidarObstacle ob
         // Check if we should be turning left or right away from obstacle
         if (obstacle.getAvgAngle() > 0)
             twist.angular.z *= -1;
+
+        twistConfidence.header.stamp = ros::Time::now();
+        twistConfidence.twist = twist;
+        twistConfidence.confidence = obstacle.dangerScore();
+        return twistConfidence;
+
+    } else {
+        twist.linear.x = 0.3;
+        twistConfidence.header.stamp = ros::Time::now();
+        twistConfidence.twist = twist;
+        twistConfidence.confidence = 20;
+        return twistConfidence;
     }
-    return twist;
 }

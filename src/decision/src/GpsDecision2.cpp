@@ -8,6 +8,9 @@
 
 #include <GpsDecision2.h>
 #include <std_msgs/Float32.h>
+#include "decision/TwistConfidence.h"
+
+
 
 GpsDecision2::GpsDecision2(int argc, char **argv, std::string node_name) {
     // Setup NodeHandles
@@ -16,15 +19,14 @@ GpsDecision2::GpsDecision2(int argc, char **argv, std::string node_name) {
     ros::NodeHandle private_nh("~");
 
     // Setup Subscriber(s)
-    uint32_t refresh_rate = 10;
+    uint32_t queue_size = 1;
     std::string waypoint_topic = "/gps_manager/current_waypoint";
-    waypoint_subscriber = private_nh.subscribe(waypoint_topic, refresh_rate,
+    waypoint_subscriber = private_nh.subscribe(waypoint_topic, queue_size,
                                                &GpsDecision2::waypointCallback, this);
 
     // Setup Publisher(s)
-    uint32_t queue_size = 10;
     std::string twist_publisher_topic = private_nh.resolveName("twist");
-    twist_publisher = private_nh.advertise<geometry_msgs::Twist>(twist_publisher_topic, queue_size);
+    twist_publisher = private_nh.advertise<decision::TwistConfidence>(twist_publisher_topic, queue_size);
 
     // Setup the GpsMover class, which will figure out what command to send to the robot
     // based on our distance and heading to the destination GPS waypoint
@@ -50,6 +52,7 @@ void GpsDecision2::waypointCallback(const geometry_msgs::PointStamped::ConstPtr 
     // Get the current position and heading of the robot
     tf2_ros::Buffer tfBuffer;
     tf2_ros::TransformListener tfListener(tfBuffer);
+    decision::TwistConfidence stampedConfidence;
     try {
         geometry_msgs::TransformStamped tfStamped = tfBuffer.lookupTransform(
                 global_frame, base_frame, ros::Time(0), ros::Duration(1.0));
@@ -64,14 +67,21 @@ void GpsDecision2::waypointCallback(const geometry_msgs::PointStamped::ConstPtr 
         // Create a new twist message and publish it
         geometry_msgs::Twist twist = mover.createTwistMessage(
                 current_location, current_heading, non_stamped_waypoint);
-        twist_publisher.publish(twist);
+        stampedConfidence.header.stamp = ros::Time::now();
+        stampedConfidence.twist = twist;
+        stampedConfidence.confidence = 30;
+        // TODO: Augment confidence levels from ekf input updates
+        twist_publisher.publish(stampedConfidence);
     } catch (tf2::LookupException e) {
         // If we can't lookup the tf, then warn the user and tell robot to stop
         ROS_WARN_STREAM("Could not lookup tf between " <<
                             global_frame << " and " << base_frame);
         // TODO: Confirm that this is initialized to 0 (or find a nice way to init it to 0)
         geometry_msgs::Twist allZeroTwist;
-        twist_publisher.publish(allZeroTwist);
+        stampedConfidence.header.stamp = ros::Time::now();
+        stampedConfidence.twist = allZeroTwist;
+        stampedConfidence.confidence = 10;
+        twist_publisher.publish(stampedConfidence);
     }
 }
 
