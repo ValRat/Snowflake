@@ -16,13 +16,11 @@ find_package(sb_utils REQUIRED)
 add_definitions(-std=c++14)
 
 add_message_files(
-        FILES
-        TwistConfidence.msg
+  DIRECTORY messages FILES TwistConfidence.msg
 )
 
 generate_messages(
-        DEPENDENCIES
-        decision
+  DEPENDENCIES std_msgs geometry_msgs
 )
 
 catkin_package(

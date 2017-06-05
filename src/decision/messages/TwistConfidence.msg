@@ -1,3 +1,3 @@
 Header header
 geometry_msgs/Twist twist
-double confidence
+float64 confidence

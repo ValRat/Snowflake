@@ -59,8 +59,6 @@ private:
     geometry_msgs::Twist recent_lidar;
     geometry_msgs::Twist recent_vision;
     geometry_msgs::Twist recent_gps;
-
-
 };
 
 #endif //DECISION_FINAL_DECISION_H
