@@ -64,6 +64,7 @@ target_link_libraries(gps_manager3 ${catkin_LIBRARIES} ${sb_utils_LIBRARIES})
 add_dependencies(final_decision decision_generate_message_cpp)
 add_dependencies(gps_decision2 decisiom_generate_message_cpp)
 add_dependencies(lidar_decision decision_generate_message_cpp)
+add_dependencies(vision_decision decision_generate_message_cpp)
 
 
 #############

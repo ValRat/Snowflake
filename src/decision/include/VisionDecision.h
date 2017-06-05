@@ -21,6 +21,7 @@
 #include <ros/ros.h>
 #include <math.h>
 #include <tiff.h>
+#include "decision/TwistConfidence.h"
 
 // This constant is used when verifying if a pixel is noise.
 // It determines the maximum consecutive number of pixels that will still
@@ -49,7 +50,11 @@ public:
      * @return the angle of the line to the positive y-axis.
      */
     static int getDesiredAngle(double numSamples, const sensor_msgs::Image::ConstPtr &image,
-                               double rolling_average_constant, double percent_of_samples_needed);
+                               double rolling_average_constant, double percent_of_image_sampled,
+                               double percent_of_samples_needed,
+                               double &confidence_value,
+                               double move_away_threshold,
+                               double percent_of_white_needed);
 
     /**
      * Determines the angle of the line parsed from the left or right side.
@@ -61,7 +66,7 @@ public:
      * @returns the angle of the line, or INVALID if line is invalid.
      */
     static int getAngleOfLine(bool rightSide, double numSamples, const sensor_msgs::Image::ConstPtr &image,
-                              double rolling_average_constant, double percent_of_samples_needed);
+                              double rolling_average_constant, double percent_of_samples_needed, double &validSamples);
 
     /**
      *  Returns a rotation speed based on the imageRatio
@@ -170,7 +175,11 @@ private:
 
     void imageCallBack(const sensor_msgs::Image::ConstPtr &image);
 
-    void publishTwist(geometry_msgs::Twist twist);
+    void publishTwist(decision::TwistConfidence twist);
+
+    static double getConfidence(const sensor_msgs::Image::ConstPtr &image_scan,
+                                double percent_of_image_sampled, double percent_of_samples_needed,
+                                double valid_samples);
 
 
     ros::Subscriber image_subscriber;
@@ -193,6 +202,15 @@ private:
 
     // Dictates how much of the image is sampled
     double percent_of_image_sampled;
+
+    // Dicates the angle to just ignore angle and turn away from the line
+    double move_away_threshold;
+
+    // Dictates how confident vision has to be to move
+    double confidence_threshold;
+
+    // Dictates how much white needs to be onscreen to be confident
+    double percent_of_white_needed;
 };
 
 #endif //DECISION_VISION_DECISION_H
