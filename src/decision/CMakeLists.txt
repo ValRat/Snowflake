@@ -61,6 +61,8 @@ target_link_libraries(gps_decision2 ${catkin_LIBRARIES} ${sb_utils_LIBRARIES})
 target_link_libraries(final_decision ${catkin_LIBRARIES} ${sb_utils_LIBRARIES})
 target_link_libraries(gps_manager3 ${catkin_LIBRARIES} ${sb_utils_LIBRARIES})
 
+add_dependencies(final_decision decision_generate_message_cpp)
+
 
 #############
 ## Testing ##

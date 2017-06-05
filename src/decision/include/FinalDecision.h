@@ -14,6 +14,7 @@
 #include <geometry_msgs/Twist.h>
 #include <sensor_msgs/Imu.h>
 #include <ros/ros.h>
+#include "decision/TwistConfidence.h"
 
 class FinalDecision {
 public:
