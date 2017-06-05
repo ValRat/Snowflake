@@ -61,6 +61,7 @@ async def on_pose_change(dct):
     #navigation_reporting_component.management.state.watcher(on_status_change, keys=('x','y','yaw'))
 navigation_reporting_component.local_pose_sensor.state.watcher(on_pose_change, keys=('x','y','yaw'))
 
+
 def robot_state_callback(pose_stamped):
     x = pose_stamped.pose.pose.position.x
     y = pose_stamped.pose.pose.position.y
@@ -71,6 +72,7 @@ def robot_state_callback(pose_stamped):
     msg.y = y
     msg.yaw = yaw
     print("Recived ROS message")
+
 
 def start_jaus(event_loop):
     _, protocol = event_loop.run_until_complete(event_loop.create_datagram_endpoint(
