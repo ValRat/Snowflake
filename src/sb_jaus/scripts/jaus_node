@@ -10,6 +10,7 @@ from concurrent.futures import ProcessPoolExecutor
 import time
 import asyncio
 from math import atan2
+import math
 from format.jaus.judp import ConnectedJUDPProtocol, Packet, make_multicast_socket
 from format.jaus import Id, Component
 from format.jaus.services import *
@@ -53,20 +54,33 @@ navigation_reporting_component = \
                 LocalWaypointListDriverService,
                 VelocityStateSensorService,
                 LocalPoseSensorService
-              ]
+              ],
+              default_authority=5
               )
 
 async def on_pose_change(dct):
     print("Pose change: " + str(dct['x']) + " " + str(dct['y']) + " " + str(dct['yaw']))
-    #navigation_reporting_component.management.state.watcher(on_status_change, keys=('x','y','yaw'))
-navigation_reporting_component.local_pose_sensor.state.watcher(on_pose_change, keys=('x','y','yaw'))
+waypoint_pub = rospy.Publisher('/gps_manager/current_waypoint', PointStamped, queue_size=2)
+async def on_waypoint_change(dct):
+    point_stamped = PointStamped()
+    point_stamped.point.x = float(dct['x'])
+    point_stamped.point.y = float(dct['y'])
+    waypoint_pub.publish(point_stamped)
+    print("Waypoint: (" + dct['x'] + "," + dct['y'] + ")")
+#navigation_reporting_component.local_pose_sensor.state.watcher(on_pose_change, keys=('x','y','yaw'))
+navigation_reporting_component.local_waypoint_driver.state.watcher(on_waypoint_change, keys=('x','y'))
+
 
 
 def robot_state_callback(pose_stamped):
     x = pose_stamped.pose.pose.position.x
     y = pose_stamped.pose.pose.position.y
     q = pose_stamped.pose.pose.orientation
-    yaw = atan2(2.0*(q.y*q.z + q.w*q.x), q.w*q.w - q.x*q.x - q.y*q.y + q.z*q.z)
+    #yaw = atan2(2.0*(q.y*q.z + q.w*q.x), q.w*q.w - q.x*q.x - q.y*q.y + q.z*q.z)
+    ysqr = y*y
+    t3 = +2.0 * (q.w * q.z + q.x*q.y)
+    t4 = +1.0 - 2.0 * (ysqr + q.z*q.z)
+    yaw = math.atan2(t3, t4)
     msg = navigation_reporting_component.local_pose_sensor
     msg.x = x
     msg.y = y
