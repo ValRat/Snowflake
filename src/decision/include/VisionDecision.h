@@ -49,8 +49,7 @@ public:
      * @return the angle of the line to the positive y-axis.
      */
     static int getDesiredAngle(double numSamples, const sensor_msgs::Image::ConstPtr &image,
-                               double rolling_average_constant, double percent_of_samples_needed,
-                               double percent_of_image_sampled);
+                               double rolling_average_constant, double percent_of_samples_needed);
 
     /**
      * Determines the angle of the line parsed from the left or right side.
@@ -62,7 +61,7 @@ public:
      * @returns the angle of the line, or INVALID if line is invalid.
      */
     static int getAngleOfLine(bool rightSide, double numSamples, const sensor_msgs::Image::ConstPtr &image,
-                              double rolling_average_constant);
+                              double rolling_average_constant, double percent_of_samples_needed);
 
     /**
      *  Returns a rotation speed based on the imageRatio
