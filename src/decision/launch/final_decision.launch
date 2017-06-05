@@ -2,6 +2,9 @@
 
     <!-- Launch Final Decision -->
     <node name="final_decision" pkg="decision" type="final_decision" output="screen">
+        <rosparam param="old_message_duration">0.5</rosparam>
+        <rosparam param="confidence_decrease">20</rosparam>
+        <rosparam param="decision_frequency">10</rosparam>
         <remap from="/final_decision/twist" to="/cmd_vel"/>
     </node>
 

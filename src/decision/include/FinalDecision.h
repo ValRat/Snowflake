@@ -15,11 +15,26 @@
 #include <sensor_msgs/Imu.h>
 #include <ros/ros.h>
 #include "decision/TwistConfidence.h"
+#include <sb_utils.h>
 
 class FinalDecision {
 public:
     // The constructor
     FinalDecision(int argc, char **argv, std::string node_name);
+
+private:
+    // This is called whenever a new message is received
+    void gpsCallBack(const decision::TwistConfidence::ConstPtr& gps_decision);
+    // This is called whenever a new message is received
+    void lidarCallBack(const decision::TwistConfidence::ConstPtr& lidar_decision);
+    // This is called whenever a new message is received
+    void visionCallBack(const decision::TwistConfidence::ConstPtr& vision_decision);
+    void imuCallback(const sensor_msgs::Imu::ConstPtr& imu);
+    void publishTwist(geometry_msgs::Twist twist);
+    // This function evaluates whether GPS, Vision, or Lidar is sending a turning command
+    bool turning(geometry_msgs::Twist twist);
+    // Check age of message and adjust confidence
+    void updateConfidence(decision::TwistConfidence& twistConfidence);
 
     /**
      * Arbitrates the three messages received from Lidar, Vision, and GPS
@@ -36,19 +51,7 @@ public:
      *
      * @return              The Twist message with the highest priority.
      */
-    geometry_msgs::Twist arbitrator(decision::TwistConfidence recent_lidar, decision::TwistConfidence recent_vision, decision::TwistConfidence recent_gps);
-
-private:
-    // This is called whenever a new message is received
-    void gpsCallBack(const decision::TwistConfidence::ConstPtr& gps_decision);
-    // This is called whenever a new message is received
-    void lidarCallBack(const decision::TwistConfidence::ConstPtr& lidar_decision);
-    // This is called whenever a new message is received
-    void visionCallBack(const decision::TwistConfidence::ConstPtr& vision_decision);
-    void imuCallback(const sensor_msgs::Imu::ConstPtr& imu);
-    void publishTwist(geometry_msgs::Twist twist);
-    // This function evaluates whether GPS, Vision, or Lidar is sending a turning command
-    bool turning(geometry_msgs::Twist twist);
+    void arbitrator(const ros::TimerEvent& timerEvent);
 
     ros::Time last_imu_callback;
 
@@ -60,6 +63,11 @@ private:
     decision::TwistConfidence recent_lidar;
     decision::TwistConfidence recent_vision;
     decision::TwistConfidence recent_gps;
+
+    ros::Duration old_message_threshold;
+    double confidence_decrease;
+    double decision_frequency;
+    ros::Timer timer;
 };
 
 #endif //DECISION_FINAL_DECISION_H
