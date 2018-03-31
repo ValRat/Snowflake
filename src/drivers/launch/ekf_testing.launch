@@ -1,0 +1,29 @@
+
+<launch>
+
+    <include file="$(find drivers)/launch/imu.launch" />
+
+    <!-- Launch the GPS driver for the Piksi -->
+    <node name="gps_driver" pkg="nmea_navsat_driver" type="nmea_serial_driver" output="screen">
+        <rosparam param="port"> /dev/ttyUSB0 </rosparam>
+        <rosparam param="baud"> 1000000 </rosparam>
+        
+        <remap from="/fix" to="/gps_driver/navsatfix"/>
+    </node>
+
+    <node name="encoder_driver" pkg="phidgets_high_speed_encoder" type="phidgets_high_speed_encoder" output="screen">
+        <!--
+        <param name="joint0_name" value="wheel_FL">
+        <param name="joint1_name" value="wheel_FR">
+        <param name="joint2_name" value="wheel_BL">
+        <param name="joint3_name" value="wheel_BR">
+        <param name="joint0_tick2rad" value="1">
+        <param name="joint1_tick2rad" value="1">
+        <param name="joint2_tick2rad" value="1">
+        <param name="joint3_tick2rad" value="1">
+        -->
+        <remap from="joint_states" to="joint_states" />
+        <remap from="joint_states_ch0_decim_speed" to="joint_states_ch0_decim_speed" />
+    </node>
+
+</launch>
