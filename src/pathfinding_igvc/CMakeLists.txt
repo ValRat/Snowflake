@@ -70,6 +70,14 @@ if (CATKIN_ENABLE_TESTING)
     catkin_add_gtest(path-finding-test test/path-finding-test.cpp src/PathFinding.cpp)
     target_link_libraries(path-finding-test ${catkin_LIBRARIES})
 
+    catkin_add_gtest(path-finder-test test/path-finder-test.cpp src/PathFinder.cpp src/AStar.cpp
+      src/PathConstructionService.cpp include/PathConstructionService.h
+      src/OccupancyGridResizeService.cpp include/OccupancyGridResizeService.h
+      src/OccupancyGridConversionService.cpp include/OccupancyGridConversionService.h
+      src/FrameTransformationService.cpp include/FrameTransformationService.h
+      )
+    target_link_libraries(path-finder-test ${catkin_LIBRARIES})
+
     catkin_add_gtest(path-finder-utils-test test/path-finder-utils-test.cpp include/PathFinder.h)
     target_link_libraries(path-finder-utils-test ${catkin_LIBRARIES})
 
