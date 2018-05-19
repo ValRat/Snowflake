@@ -19,9 +19,9 @@ nav_msgs::Path PathFinder::calculatePath(geometry_msgs::Point start,
     processGridAndGetStartAndGoalOnGrid(grid, start, goal, start_on_grid, goal_on_grid);
 
     std::stack<AStar::GridPoint> points =
-    AStar().run(grid, start_on_grid, goal_on_grid);
-    return PathConstructor(
-           OccupancyGridAdapter(grid.info))
+            AStar::run(grid, start_on_grid, goal_on_grid);
+    return PathConstructionService::buildService(
+           occupancy_grid_conversion_service)
     .constructPath(points);
 }
 

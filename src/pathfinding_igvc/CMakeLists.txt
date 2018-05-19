@@ -77,17 +77,11 @@ target_link_libraries(path_finder
 
 if (CATKIN_ENABLE_TESTING)
 
-    # Adding gtests to the package
-    catkin_add_gtest(path-finding-test test/path-finding-test.cpp src/PathFinding.cpp)
-    target_link_libraries(path-finding-test ${catkin_LIBRARIES})
-
-    catkin_add_gtest(path-finder-test test/path-finder-test.cpp
-      src/PathFinder.cpp include/PathFinder.h
-      src/AStar.cpp include/AStar.h
-      src/OccupancyGridResizer.cpp include/OccupancyGridResizer.h
-      src/PathConstructor.cpp include/PathConstructor.h
-      src/OccupancyGridAdapter.cpp include/OccupancyGridAdapter.h
-      src/FrameTransformer.cpp include/FrameTransformer.h
+    catkin_add_gtest(path-finder-test test/path-finder-test.cpp src/PathFinder.cpp src/AStar.cpp
+      src/PathConstructionService.cpp include/PathConstructionService.h
+      src/OccupancyGridResizeService.cpp include/OccupancyGridResizeService.h
+      src/OccupancyGridConversionService.cpp include/OccupancyGridConversionService.h
+      src/FrameTransformationService.cpp include/FrameTransformationService.h
       )
     target_link_libraries(path-finder-test ${catkin_LIBRARIES})
 
