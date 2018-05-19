@@ -39,6 +39,22 @@ add_executable(path_finding
         include/PathFinding.h
         )
 
+add_executable(path_finder
+  include/AStar.h
+  include/FrameTransformer.h
+  include/OccupancyGridAdapter.h
+  include/OccupancyGridResizer.h
+  include/PathConstructor.h
+  include/PathFinder.h
+  include/PathFinderUtils.h
+  src/AStar.cpp
+  src/FrameTransformer.cpp
+  src/OccupancyGridAdapter.cpp
+  src/OccupancyGridResizer.cpp
+  src/PathConstructor.cpp
+  src/PathFinder.cpp
+  src/path_finder.cpp
+  )
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(sample_package_node
@@ -48,6 +64,11 @@ target_link_libraries(path_finding
         ${catkin_LIBRARIES}
         ${sb_utils_LIBRARIES}
         )
+
+target_link_libraries(path_finder
+  ${catkin_LIBRARIES}
+  ${sb_utils_LIBRARIES}
+  )
 
 
 #############
@@ -59,6 +80,45 @@ if (CATKIN_ENABLE_TESTING)
     # Adding gtests to the package
     catkin_add_gtest(path-finding-test test/path-finding-test.cpp src/PathFinding.cpp)
     target_link_libraries(path-finding-test ${catkin_LIBRARIES})
+
+    catkin_add_gtest(path-finder-test test/path-finder-test.cpp
+      src/PathFinder.cpp include/PathFinder.h
+      src/AStar.cpp include/AStar.h
+      src/OccupancyGridResizer.cpp include/OccupancyGridResizer.h
+      src/PathConstructor.cpp include/PathConstructor.h
+      src/OccupancyGridAdapter.cpp include/OccupancyGridAdapter.h
+      src/FrameTransformer.cpp include/FrameTransformer.h
+      )
+    target_link_libraries(path-finder-test ${catkin_LIBRARIES})
+
+    catkin_add_gtest(path-finder-utils-test test/path-finder-utils-test.cpp include/PathFinder.h)
+    target_link_libraries(path-finder-utils-test ${catkin_LIBRARIES})
+
+    catkin_add_gtest(path-construction-service-test test/path-constructor-test.cpp
+      src/PathConstructor.cpp include/PathConstructor.h
+      src/OccupancyGridAdapter.cpp include/OccupancyGridAdapter.h
+      src/FrameTransformer.cpp include/FrameTransformer.h
+      )
+    target_link_libraries(path-construction-service-test ${catkin_LIBRARIES})
+
+    catkin_add_gtest(frame-transformation-service-test test/frame-transformer-test.cpp
+      src/FrameTransformer.cpp include/FrameTransformer.h
+      )
+    target_link_libraries(frame-transformation-service-test ${catkin_LIBRARIES})
+
+    catkin_add_gtest(occupancy-grid-conversion-service-test test/occupancy-grid-adapter-test.cpp
+      src/OccupancyGridAdapter.cpp include/OccupancyGridAdapter.h
+      src/FrameTransformer.cpp include/FrameTransformer.h
+      )
+    target_link_libraries(occupancy-grid-conversion-service-test ${catkin_LIBRARIES})
+
+    catkin_add_gtest(occupancy-grid-resize-service-test test/occupancy-grid-resize-service-test.cpp
+      src/OccupancyGridResizer.cpp include/OccupancyGridResizer.h
+      src/OccupancyGridAdapter.cpp include/OccupancyGridAdapter.h
+      src/FrameTransformer.cpp include/FrameTransformer.h
+      )
+    target_link_libraries(occupancy-grid-resize-service-test ${catkin_LIBRARIES})
+
 
     # Adding rostest to the package
     find_package(rostest REQUIRED)
