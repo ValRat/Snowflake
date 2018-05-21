@@ -8,12 +8,12 @@
 #ifndef PATHFINDING_IGVC_PATHFINDERUTILS_H
 #define PATHFINDING_IGVC_PATHFINDERUTILS_H
 
+#include "AStar.h"
 #include <geometry_msgs/Point.h>
 #include <geometry_msgs/PoseStamped.h>
+#include <nav_msgs/OccupancyGrid.h>
 #include <tf/LinearMath/Transform.h>
 #include <tf/transform_datatypes.h>
-#include <nav_msgs/OccupancyGrid.h>
-#include "AStar.h"
 
 class PathFinderUtils {
   public:
@@ -93,22 +93,37 @@ class PathFinderUtils {
         return q;
     }
 
-    static bool isPointInsideGrid(nav_msgs::MapMetaData grid_info, AStar::GridPoint point) {
+    /**
+     * Returns whether a given grid point is inside the occupancy grid.
+     *
+     * @param grid_info the metadata of the occupancy grid
+     * @param point the point in question
+     * @return
+     */
+    static bool isPointInsideGrid(nav_msgs::MapMetaData grid_info,
+                                  AStar::GridPoint point) {
         if (point.col < 0 || point.row < 0) return false;
-        if (point.col >= grid_info.width)   return false;
-        if (point.row >= grid_info.height)  return false;
+        if (point.col >= grid_info.width) return false;
+        if (point.row >= grid_info.height) return false;
         return true;
     }
 
-    static void fitPointInsideGrid(nav_msgs::MapMetaData grid_info, AStar::GridPoint &point) {
-//        int width = grid_info.width;
-//        int height = grid_info.height;
-
+    /**
+     * Fits the grid point inside the occupancy grid by updating it to
+     * be the closest cell to the goal that is still in the grid.
+     *
+     * @param grid_info
+     * @param point
+     */
+    static void fitPointInsideGrid(nav_msgs::MapMetaData grid_info,
+                                   AStar::GridPoint& point) {
         point.col = point.col < 0 ? 0 : point.col;
-        point.col = point.col >= grid_info.width ? grid_info.width - 1 : point.col;
+        point.col =
+        point.col >= grid_info.width ? grid_info.width - 1 : point.col;
 
         point.row = point.row < 0 ? 0 : point.row;
-        point.row = point.row >= grid_info.height ? grid_info.height - 1 : point.row;
+        point.row =
+        point.row >= grid_info.height ? grid_info.height - 1 : point.row;
     }
 };
 

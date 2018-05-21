@@ -1,11 +1,11 @@
 /*
  * Created By: Min Gyo Kim
  * Created On: May 14th 2018
- * Description: Unit tests for occupancy grid conversion service
+ * Description: Unit tests for occupancy grid adapter
  */
 
-#include <OccupancyGridAdapter.h>
 #include "PathFinderTestUtils.h"
+#include <OccupancyGridAdapter.h>
 #include <gtest/gtest.h>
 
 TEST(OccupancyGridAdapter, TestIndexOfPointInGrid) {
@@ -24,15 +24,14 @@ TEST(OccupancyGridAdapter, TestIndexOfPointInGrid) {
     map_meta_data.origin = origin;
 
     /* OccupancyGridAdapter */
-    OccupancyGridAdapter service =
-    OccupancyGridAdapter(map_meta_data);
+    OccupancyGridAdapter adapter = OccupancyGridAdapter(map_meta_data);
 
     geometry_msgs::Point point;
     point.x = 6.2;
     point.y = 3.1;
     point.z = 0.0;
 
-    AStar::GridPoint grid_point = service.convertFromMapToGridPoint(point);
+    AStar::GridPoint grid_point = adapter.convertFromMapToGridPoint(point);
 
     EXPECT_EQ(grid_point.col, 1);
     EXPECT_EQ(grid_point.row, 0);

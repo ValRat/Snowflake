@@ -1,11 +1,11 @@
 /*
  * Created By: Min Gyo Kim
  * Created On: May 14th 2018
- * Description: Unit tests for path construction service
+ * Description: Unit tests for path constructor
  */
 
-#include <PathConstructor.h>
 #include "PathFinderTestUtils.h"
+#include <PathConstructor.h>
 #include <gtest/gtest.h>
 
 TEST(PathConstructor, TestConstructPath) {
@@ -24,7 +24,7 @@ TEST(PathConstructor, TestConstructPath) {
     map_meta_data.origin = origin;
 
     /* OccupancyGridAdapter */
-    OccupancyGridAdapter occupancy_grid_conversion_service =
+    OccupancyGridAdapter occupancy_grid_adapter =
     OccupancyGridAdapter(map_meta_data);
 
     /* first point in path*/
@@ -39,8 +39,7 @@ TEST(PathConstructor, TestConstructPath) {
     points.push(point2);
 
     nav_msgs::Path path =
-    PathConstructor(occupancy_grid_conversion_service)
-    .constructPath(points);
+    PathConstructor(occupancy_grid_adapter).constructPath(points);
 
     tf::Quaternion q1;
     tf::quaternionMsgToTF(path.poses[0].pose.orientation, q1);

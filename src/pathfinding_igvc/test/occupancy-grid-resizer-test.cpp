@@ -1,14 +1,15 @@
 /*
  * Created By: Min Gyo Kim
- * Created On: May 19th 2018
- * Description: Unit Tests for Path Finder
+ * Created On: May 14th 2018
+ * Description: Unit tests for occupancy grid resizer
  */
 
 #include "PathFinderTestUtils.h"
-#include <PathFinder.h>
+#include <OccupancyGridAdapter.h>
+#include <OccupancyGridResizer.h>
 #include <gtest/gtest.h>
 
-TEST(PathFinder, ProcessGridAndGetStartAndGoalOnGrid) {
+TEST(OccupancyGridResizer, TestAddSpaceAroundGrid) {
     /* origin of OccupancyGrid */
     // initialize origin of occupancy grid
     geometry_msgs::Pose origin =
@@ -22,27 +23,16 @@ TEST(PathFinder, ProcessGridAndGetStartAndGoalOnGrid) {
     map_meta_data.height     = 3;
     // add origin to map_meta_data
     map_meta_data.origin = origin;
-    // set mapMetaData
+
+    /* OccupancyGrid */
+    // initialize occupancy grid
     nav_msgs::OccupancyGrid grid;
+    // set map_meta_data
     grid.info = map_meta_data;
-    grid.data = std::vector<int8_t>(4, AStar::GRID_FREE);
+    grid.data = std::vector<int8_t>(6, AStar::GRID_OCCUPIED);
 
-    geometry_msgs::Point start;
-    start.x = 3.0;
-    start.y = 3.0;
-    geometry_msgs::Point goal;
-    goal.x = 9999;
-    goal.y = 6.3;
+    OccupancyGridResizer::addSpaceAroundGrid(grid);
 
-    /* Declaration of starting and goal point in grid frame */
-    AStar::GridPoint start_on_grid;
-    AStar::GridPoint goal_on_grid;
-
-    /* Function being tested */
-    PathFinder::processGridAndGetStartAndGoalOnGrid(
-    grid, start, goal, start_on_grid, goal_on_grid);
-
-    /* Verify that grid has been resized */
     EXPECT_EQ(map_meta_data.width + 2, grid.info.width);
     EXPECT_EQ(map_meta_data.height + 2, grid.info.height);
     EXPECT_FLOAT_EQ(map_meta_data.origin.position.x - map_meta_data.resolution,
@@ -61,23 +51,13 @@ TEST(PathFinder, ProcessGridAndGetStartAndGoalOnGrid) {
     };
 
     EXPECT_EQ(expected_data, grid.data);
-
-    /* Verify that starting point has been correctly transformed into the
-     * resized grid frame */
-    EXPECT_EQ(1, start_on_grid.col);
-    EXPECT_EQ(3, start_on_grid.row);
-
-    /* Verify that goal point has been correctly transformed into the resized
-     * grid frame and fit into the grid */
-    EXPECT_EQ(3, goal_on_grid.col);
-    EXPECT_EQ(2, goal_on_grid.row);
 }
 
-TEST(PathFinder, ProcessGridAndGetStartAndGoalOnGridWithAngle) {
+TEST(OccupancyGridResizer, TestAddSpaceAroundGridWithAngle) {
     /* origin of OccupancyGrid */
     // initialize origin of occupancy grid
     geometry_msgs::Pose origin =
-    PathFinderTestUtils::constructPose(3.0, 3.0, M_PI / 6);
+    PathFinderTestUtils::constructPose(3.0, 3.0, M_PI / 4);
 
     /* map_meta_data of OccupancyGrid */
     // initialize map_meta_data
@@ -95,36 +75,14 @@ TEST(PathFinder, ProcessGridAndGetStartAndGoalOnGridWithAngle) {
     grid.info = map_meta_data;
     grid.data = std::vector<int8_t>(6, AStar::GRID_OCCUPIED);
 
-    /* Starting point in map frame */
-    geometry_msgs::Point start;
-    start.x = 4.8;
-    start.y = 7.9;
+    OccupancyGridResizer::addSpaceAroundGrid(grid);
 
-    /* Goal point in map frame */
-    geometry_msgs::Point goal;
-    goal.x = 9999;
-    goal.y = 6.3;
-
-    /* Declaration of starting and goal point in grid frame */
-    AStar::GridPoint start_on_grid;
-    AStar::GridPoint goal_on_grid;
-
-    /* Function being tested */
-    PathFinder::processGridAndGetStartAndGoalOnGrid(
-    grid, start, goal, start_on_grid, goal_on_grid);
-
-    /* Verify that grid has been resized */
     EXPECT_EQ(map_meta_data.width + 2, grid.info.width);
     EXPECT_EQ(map_meta_data.height + 2, grid.info.height);
-
-    float expected_origin_x = map_meta_data.origin.position.x -
-                              map_meta_data.resolution * cos(M_PI / 6) +
-                              map_meta_data.resolution * sin(M_PI / 6);
-    float expected_origin_y = map_meta_data.origin.position.y -
-                              map_meta_data.resolution * sin(M_PI / 6) -
-                              map_meta_data.resolution * cos(M_PI / 6);
-    EXPECT_FLOAT_EQ(expected_origin_x, grid.info.origin.position.x);
-    EXPECT_FLOAT_EQ(expected_origin_y, grid.info.origin.position.y);
+    EXPECT_FLOAT_EQ(3.0 - 2 * cos(M_PI / 4) + 2 * sin(M_PI / 4),
+                    grid.info.origin.position.x);
+    EXPECT_FLOAT_EQ(3.0 - 2 * sin(M_PI / 4) - 2 * cos(M_PI / 4),
+                    grid.info.origin.position.y);
 
     std::vector<int8_t> expected_data = {
     AStar::GRID_FREE,     AStar::GRID_FREE,     AStar::GRID_FREE,

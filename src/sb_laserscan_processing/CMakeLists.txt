@@ -55,13 +55,9 @@ target_link_libraries(cone_extractor_node
         ${catkin_LIBRARIES}
         )
 
-<<<<<<< Updated upstream
-=======
 add_dependencies(cone_extractor_node
         ${catkin_EXPORTED_TARGETS}
 )
-
->>>>>>> Stashed changes
 
 #############
 ## Testing ##

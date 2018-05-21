@@ -39,7 +39,7 @@ class ConeIdentification {
          * @param ang_threshold the max angle for a split to be considered (in radians)
          * @param frame_id frame id used to generate edge_points (typically same as the laserscan msg)
          */
-        static void addConesInEdgeCluster(std::vector<mapping_igvc::ConeObstacle> &identified_cones, std::vector<mapping_igvc::Point2D> &edge_points, double radius_exp, double radius_tol, int min_points_in_cone, double ang_threshold, std::string frame_id);
+        static void addConesInEdgeCluster(std::vector<mapping_igvc::ConeObstacle> &identified_cones, std::vector<sb_geom_msgs::Point2D> &edge_points, double radius_exp, double radius_tol, int min_points_in_cone, double ang_threshold, std::string frame_id);
 
         /**
         * Splits a cluster of edge points such that points forming multiple cones extremely close to one another will be returned
@@ -49,14 +49,14 @@ class ConeIdentification {
         * @param ang_tol the max angle for a split to be considered (in radians)
         * @return a vector consisting of split edge point vectors
         */
-        static std::vector<std::vector<mapping_igvc::Point2D>> splitEdge(const std::vector<mapping_igvc::Point2D> &edge_points, int line_point_dist, double ang_threshold);
+        static std::vector<std::vector<sb_geom_msgs::Point2D>> splitEdge(const std::vector<sb_geom_msgs::Point2D> &edge_points, int line_point_dist, double ang_threshold);
 
         /**
         * Converts a cluster of edge points to a cone obstacle with a predicted radius
         * @param edge_points should have size >= 3 and be in the order they appear in the object
         * @return a cone formed by edge points
         */
-        static mapping_igvc::ConeObstacle edgeToCone(const std::vector<mapping_igvc::Point2D> &edge_points);
+        static mapping_igvc::ConeObstacle edgeToCone(const std::vector<sb_geom_msgs::Point2D> &edge_points);
 
          /**
          * Converts a laserscan reading to a point
@@ -64,7 +64,7 @@ class ConeIdentification {
          * @param ang angle reading, should be in valid min-max angle of laser scan
          * @return point in 2d
          */
-        static mapping_igvc::Point2D laserToPoint(double dist, double ang);
+        static sb_geom_msgs::Point2D laserToPoint(double dist, double ang);
 
         /**
          * Gets the distance between 2 points
@@ -72,28 +72,28 @@ class ConeIdentification {
          * @param p2 point 2
          * @return distance between points
          */
-        static double getDist(const mapping_igvc::Point2D &p1, const mapping_igvc::Point2D &p2);
+        static double getDist(const sb_geom_msgs::Point2D &p1, const sb_geom_msgs::Point2D &p2);
 
         /**
          * Get the mean x coordinate of points in edge_points
          * @param edge_points
          * @return mean x coordinate
          */
-        static double getMeanX(const std::vector<mapping_igvc::Point2D> &edge_points);
+        static double getMeanX(const std::vector<sb_geom_msgs::Point2D> &edge_points);
 
         /**
          * Get the mean y coordinate of points in edge_points
          * @param edge_points
          * @return mean y coordinate
          */
-        static double getMeanY(const std::vector<mapping_igvc::Point2D> &edge_points);
+        static double getMeanY(const std::vector<sb_geom_msgs::Point2D> &edge_points);
 
         /**
          * Get the slope of the regression line formed by points in edge_points
          * @param edge_points
          * @return slope of line
          */
-        static double getRegressionSlope(const std::vector<mapping_igvc::Point2D> &edge_points);
+        static double getRegressionSlope(const std::vector<sb_geom_msgs::Point2D> &edge_points);
 
 };
 
