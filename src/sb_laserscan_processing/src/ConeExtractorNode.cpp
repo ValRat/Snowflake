@@ -11,7 +11,6 @@ ConeExtractorNode::ConeExtractorNode(int argc, char **argv, std::string node_nam
     ros::NodeHandle nh;
     ros::NodeHandle private_nh("~");
     uint32_t queue_size = 1;
-    int refresh_rate = 10;
 
     /* Get ros params */
     std::string cone_dist_tol_param = "cone_dist_tol";
@@ -22,14 +21,14 @@ ConeExtractorNode::ConeExtractorNode(int argc, char **argv, std::string node_nam
                 default_cone_dist_tol);
 
     std::string cone_rad_exp_param = "cone_rad_exp";
-    double default_cone_rad_exp = 0.1;
+    double default_cone_rad_exp = 0.3;
     SB_getParam(private_nh,
                 cone_rad_exp_param,
                 cone_rad_exp,
                 default_cone_rad_exp);
 
     std::string cone_rad_tol_param = "cone_rad_tol";
-    double default_cone_rad_tol = 0.15; //Change later
+    double default_cone_rad_tol = 0.1; //Change later
     SB_getParam(private_nh,
                 cone_rad_tol_param,
                 cone_rad_tol,
@@ -50,11 +49,16 @@ ConeExtractorNode::ConeExtractorNode(int argc, char **argv, std::string node_nam
                 default_ang_threshold);
 
     std::string subscribe_topic = "/scan"; // Setup subscriber to laserscan (Placeholder)
-    laser_subscriber = nh.subscribe(subscribe_topic, refresh_rate, &ConeExtractorNode::laserCallBack, this);
+    laser_subscriber = nh.subscribe(subscribe_topic, queue_size, &ConeExtractorNode::laserCallBack, this);
 
-    std::string publish_topic = "output_cone_obstacle"; //Placeholder
+    std::string output_cone_topic = "output_cone_obstacle"; //Placeholder
     cone_publisher = private_nh.advertise<mapping_igvc::ConeObstacle>(
-            publish_topic, queue_size
+            output_cone_topic, queue_size
+    );
+
+    std::string marker_topic = "markers"; //Placeholder
+    rviz_publisher = private_nh.advertise<visualization_msgs::Marker>(
+            marker_topic, queue_size
     );
 }
 
@@ -66,11 +70,45 @@ void ConeExtractorNode::laserCallBack(const sensor_msgs::LaserScan::ConstPtr& pt
     for (int i=0; i<cones.size(); i++){ //Publish cones individually
         cone_publisher.publish(cones[i]);
 
-        /*
         std::cout<<"Cone #:"<<i<<std::endl;
         std::cout<<"X: "<<cones[i].center.x<<std::endl;
         std::cout<<"Y: "<<cones[i].center.y<<std::endl;
         std::cout<<"R: "<<cones[i].radius<<std::endl;
-        std::cout<<std::endl;*/
+        std::cout<<std::endl;
     }
+    std::cout<<"================="<<std::endl;
+    publishMarkers(cones);
+}
+
+
+void ConeExtractorNode::publishMarkers(std::vector<mapping_igvc::ConeObstacle> cones){
+    if (cones.empty())
+        return;
+
+    visualization_msgs::Marker marker;
+
+    marker.id = 0;
+    marker.header.frame_id = cones[0].header.frame_id;
+    marker.action = visualization_msgs::Marker::ADD;
+    marker.pose.orientation.w = 1.0;
+
+    marker.type = visualization_msgs::Marker::POINTS;
+
+    // POINTS markers use x and y scale for width/height respectively
+    marker.scale.x = 0.1;
+    marker.scale.y = 0.1;
+
+    // Points are green
+    marker.color.g = 1.0f;
+    marker.color.a = 1.0;
+
+    for (int i=0; i<cones.size(); i++){
+        geometry_msgs::Point coneCenter;
+        coneCenter.x = cones[i].center.x;
+        coneCenter.y = cones[i].center.y;
+        marker.points.push_back(coneCenter);
+    }
+
+    rviz_publisher.publish(marker);
+
 }
