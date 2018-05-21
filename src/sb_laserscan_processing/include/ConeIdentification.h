@@ -8,7 +8,7 @@
 #include <iostream>
 #include <ros/ros.h>
 #include <sensor_msgs/LaserScan.h>
-#include <mapping_igvc/Point2D.h>
+#include <sb_geom_msgs/Point2D.h>
 #include <mapping_igvc/ConeObstacle.h>
 #include <math.h>
 

@@ -19,13 +19,16 @@
   <!-- Dependencies can be catkin packages or system dependencies -->
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>mapping_igvc</build_depend>
+  <build_depend>sb_geom_msgs</build_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>sb_utils</build_depend>
   <build_export_depend>mapping_igvc</build_export_depend>
   <build_export_depend>roscpp</build_export_depend>
   <build_export_depend>sb_utils</build_export_depend>
+  <build_export_depend>sb_geom_msgs</build_export_depend>
   <exec_depend>mapping_igvc</exec_depend>
   <exec_depend>roscpp</exec_depend>
   <exec_depend>sb_utils</exec_depend>
+  <exec_depend>sb_geom_msgs</exec_depend>
 
 </package>

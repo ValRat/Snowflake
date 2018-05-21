@@ -5,8 +5,6 @@ project(sb_laserscan_processing)
 # (If built in "Debug", some functions can take orders of magnitude longer)
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     set_property(CACHE CMAKE_BUILD_TYPE PROPERTY VALUE "Release")
-    message(STATUS "Hi")
-
 endif()
 
 add_definitions(-std=c++14)
@@ -15,8 +13,10 @@ add_definitions(-std=c++14)
 find_package(catkin REQUIRED COMPONENTS
         roscpp
         std_msgs
-        mapping_igvc
+        mapping_igvc #For cone obstacle msg
+        sb_geom_msgs
         sb_utils
+        message_generation
 )
 
 catkin_package(
@@ -55,6 +55,13 @@ target_link_libraries(cone_extractor_node
         ${catkin_LIBRARIES}
         )
 
+<<<<<<< Updated upstream
+=======
+add_dependencies(cone_extractor_node
+        ${catkin_EXPORTED_TARGETS}
+)
+
+>>>>>>> Stashed changes
 
 #############
 ## Testing ##
